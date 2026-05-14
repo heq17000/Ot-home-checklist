@@ -1192,11 +1192,14 @@ button:focus-visible {
   }
 
   .main-screen {
-    justify-content: flex-end;
+    justify-content: flex-start;
+    height: 100svh;
     min-height: 100svh;
+    max-height: 100svh;
+    padding: 0 12px;
     background-color: #fff2c7;
-    background-position: center top;
-    background-size: 100% auto;
+    background-position: center top 8px;
+    background-size: min(100vw, 430px) auto;
   }
 
   .main-screen::after {
@@ -1204,29 +1207,29 @@ button:focus-visible {
     position: absolute;
     inset: 0;
     background:
-      linear-gradient(180deg, rgba(255, 246, 206, 0) 0%, rgba(255, 246, 206, 0.04) 48%, rgba(255, 242, 199, 0.96) 69%, rgba(255, 242, 199, 1) 100%),
-      radial-gradient(circle at 50% 68%, rgba(255, 248, 218, 0.92) 0%, rgba(255, 248, 218, 0.78) 35%, rgba(255, 242, 199, 0) 72%);
+      linear-gradient(180deg, rgba(255, 246, 206, 0) 0%, rgba(255, 246, 206, 0) 46%, rgba(255, 242, 199, 0.86) 64%, rgba(255, 242, 199, 1) 100%),
+      radial-gradient(circle at 50% 66%, rgba(255, 248, 218, 0.82) 0%, rgba(255, 248, 218, 0.66) 30%, rgba(255, 242, 199, 0) 66%);
     pointer-events: none;
   }
 
   .main-content {
-    width: min(92vw, 370px);
-    gap: 10px;
-    margin: 0 0 max(16px, env(safe-area-inset-bottom));
-    padding: 12px 8px 18px;
+    width: min(88vw, 340px);
+    gap: 8px;
+    margin-top: clamp(42px, 8svh, 78px);
+    padding: 0;
   }
 
   .game-kicker {
-    min-height: 32px;
-    padding: 6px 12px;
-    font-size: 13px;
+    min-height: 28px;
+    padding: 5px 10px;
+    font-size: 12px;
     background: rgba(230, 244, 204, 0.92);
   }
 
   .game-title {
     margin: 0;
-    font-size: clamp(38px, 12vw, 54px);
-    line-height: 0.96;
+    font-size: clamp(34px, 10.8vw, 48px);
+    line-height: 0.94;
     text-shadow:
       0 4px 0 #e9d87a,
       0 8px 0 rgba(28, 93, 41, 0.1),
@@ -1235,10 +1238,11 @@ button:focus-visible {
 
   .main-start-btn {
     min-width: 0;
-    width: min(78vw, 300px);
-    min-height: 50px;
-    margin-top: 0;
-    font-size: 18px;
+    width: min(68vw, 260px);
+    min-height: 46px;
+    margin-top: clamp(270px, 45svh, 360px);
+    padding: 12px 20px;
+    font-size: 17px;
   }
 
   .stage-header {
@@ -1462,5 +1466,26 @@ button:focus-visible {
   .instagram-link img {
     width: 70px;
     height: 70px;
+  }
+}
+
+@media (max-width: 520px) and (max-height: 740px) {
+  .main-screen {
+    background-size: min(94vw, 390px) auto;
+    background-position: center top 4px;
+  }
+
+  .main-content {
+    margin-top: 32px;
+  }
+
+  .game-title {
+    font-size: clamp(31px, 9.8vw, 42px);
+  }
+
+  .main-start-btn {
+    margin-top: clamp(220px, 39svh, 290px);
+    min-height: 42px;
+    font-size: 16px;
   }
 }
