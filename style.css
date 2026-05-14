@@ -498,11 +498,11 @@ button:focus-visible {
 .answer-ring {
   position: absolute;
   z-index: 5;
-  border: 3px solid #5cff7d;
+  border: 2px solid #5cff7d;
   border-radius: 999px;
   transform: translate(-50%, -50%);
   pointer-events: none;
-  box-shadow: 0 0 0 3px rgba(92, 255, 125, 0.2), 0 0 16px rgba(92, 255, 125, 0.76);
+  box-shadow: 0 0 0 2px rgba(92, 255, 125, 0.18), 0 0 10px rgba(92, 255, 125, 0.62);
   animation: ringPulse 1.25s ease infinite;
 }
 
@@ -1192,69 +1192,133 @@ button:focus-visible {
   }
 
   .main-screen {
-    background-size: auto 100%;
+    justify-content: flex-end;
+    min-height: 100svh;
+    background-color: #fff2c7;
+    background-position: center top;
+    background-size: 100% auto;
+  }
+
+  .main-screen::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background:
+      linear-gradient(180deg, rgba(255, 246, 206, 0) 0%, rgba(255, 246, 206, 0.04) 48%, rgba(255, 242, 199, 0.96) 69%, rgba(255, 242, 199, 1) 100%),
+      radial-gradient(circle at 50% 68%, rgba(255, 248, 218, 0.92) 0%, rgba(255, 248, 218, 0.78) 35%, rgba(255, 242, 199, 0) 72%);
+    pointer-events: none;
   }
 
   .main-content {
-    width: min(86vw, 360px);
-    padding: 18px 10px;
-    margin-top: -88px;
+    width: min(92vw, 370px);
+    gap: 10px;
+    margin: 0 0 max(16px, env(safe-area-inset-bottom));
+    padding: 12px 8px 18px;
   }
 
   .game-kicker {
-    min-height: 38px;
-    padding: 7px 14px;
-    font-size: 14px;
+    min-height: 32px;
+    padding: 6px 12px;
+    font-size: 13px;
+    background: rgba(230, 244, 204, 0.92);
   }
 
   .game-title {
-    font-size: clamp(44px, 14vw, 62px);
+    margin: 0;
+    font-size: clamp(38px, 12vw, 54px);
+    line-height: 0.96;
     text-shadow:
-      0 5px 0 #e9d87a,
-      0 9px 0 rgba(28, 93, 41, 0.1),
-      0 12px 22px rgba(111, 93, 19, 0.2);
+      0 4px 0 #e9d87a,
+      0 8px 0 rgba(28, 93, 41, 0.1),
+      0 10px 18px rgba(111, 93, 19, 0.18);
+  }
+
+  .main-start-btn {
+    min-width: 0;
+    width: min(78vw, 300px);
+    min-height: 50px;
+    margin-top: 0;
+    font-size: 18px;
   }
 
   .stage-header {
-    flex-direction: column;
-    align-items: flex-start;
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 6px;
+    margin-bottom: 6px;
   }
 
   .stage-actions {
     width: 100%;
     display: grid;
     grid-template-columns: 1fr 1fr;
+    gap: 6px;
   }
 
   .stage-progress {
     align-self: stretch;
     text-align: center;
+    padding: 8px 10px;
+    font-size: 13px;
+  }
+
+  .stage-title {
+    font-size: 25px;
+    line-height: 1.05;
+  }
+
+  .stage-subtitle {
+    display: none;
+  }
+
+  .quit-btn {
+    min-height: 34px;
+    padding: 7px 10px;
+    font-size: 13px;
   }
 
   .stage-screen {
-    padding: 62px 12px 16px;
+    min-height: 100svh;
+    padding: 52px 8px 8px;
   }
 
   .mission-card {
-    padding: 12px;
-    gap: 10px;
+    grid-template-columns: auto 1fr;
+    margin-bottom: 8px;
+    padding: 8px 10px;
+    gap: 8px;
+    border-radius: 14px;
   }
 
   .mission-badge {
     min-width: auto;
-    width: 100%;
+    width: auto;
+    padding: 7px 9px;
+    border-radius: 12px;
+    font-size: 13px;
   }
 
   .mission-card strong {
-    font-size: 18px;
+    margin-bottom: 0;
+    font-size: 15px;
   }
 
   .mission-card span {
-    font-size: 14px;
+    display: none;
+  }
+
+  .stage-layout {
+    gap: 8px;
+  }
+
+  .stage-image {
+    max-height: 40svh;
+    object-fit: contain;
+    background: #05070d;
   }
 
   .image-area {
-    border-radius: 18px;
+    border-radius: 14px;
   }
 
   .side-panel,
@@ -1264,16 +1328,52 @@ button:focus-visible {
   }
 
   .side-panel {
-    padding: 14px;
+    padding: 10px;
   }
 
   .check-item {
-    padding: 12px;
-    font-size: 15px;
+    grid-template-columns: 22px 1fr;
+    gap: 6px;
+    padding: 8px 9px;
+    margin-bottom: 6px;
+    border-radius: 12px;
+    font-size: 13px;
+    line-height: 1.22;
+  }
+
+  .checklist-title {
+    margin-bottom: 8px;
+    font-size: 17px;
+  }
+
+  .score-row {
+    margin: -2px 0 8px;
+    font-size: 12px;
   }
 
   .message-box {
+    min-height: 0;
+    margin-top: 8px;
+    padding: 9px 10px;
+    border-radius: 12px;
+    font-size: 12px;
+    line-height: 1.28;
+  }
+
+  .stage-forward-btn {
+    min-height: 42px;
+    margin-top: 6px;
+    padding: 10px 14px;
     font-size: 15px;
+  }
+
+  .feedback-mark {
+    font-size: 30px;
+  }
+
+  .answer-ring {
+    border-width: 2px;
+    box-shadow: 0 0 0 1px rgba(92, 255, 125, 0.15), 0 0 7px rgba(92, 255, 125, 0.55);
   }
 
   .back-btn {

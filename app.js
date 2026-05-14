@@ -806,7 +806,7 @@ function renderAnswerRings(stage) {
     .filter(item => foundItems.includes(item.id))
     .map(item => {
       const point = getItemPoint(item);
-      const visualSize = Math.max(point.radius * 1.45, 8);
+      const visualSize = Math.max(Math.min(point.radius * 0.72, 7), 4.8);
       return `
         <div 
           class="answer-ring"
