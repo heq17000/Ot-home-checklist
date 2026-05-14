@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="800" viewBox="0 0 1200 800">
+<defs><linearGradient id="g" x1="0" x2="1" y1="0" y2="1"><stop stop-color="#2f6bff"/><stop offset="1" stop-color="#8ce99a"/></linearGradient><filter id="s"><feDropShadow dx="0" dy="12" stdDeviation="10" flood-opacity=".25"/></filter></defs>
+<rect width="1200" height="800" fill="url(#g)"/>
+<circle cx="160" cy="120" r="90" fill="#ffdf5d" opacity=".85"/>
+<rect x="135" y="430" width="230" height="185" rx="24" fill="#fff4d2" filter="url(#s)"/><polygon points="110,430 250,315 390,430" fill="#ff8a3d" filter="url(#s)"/><rect x="220" y="505" width="62" height="110" rx="8" fill="#805b45"/>
+<rect x="465" y="290" width="270" height="255" rx="30" fill="#e8f1ff" filter="url(#s)"/><rect x="515" y="350" width="60" height="80" rx="10" fill="#71a7ff"/><rect x="620" y="350" width="60" height="80" rx="10" fill="#71a7ff"/><rect x="565" y="460" width="70" height="85" rx="10" fill="#486581"/>
+<rect x="820" y="420" width="235" height="160" rx="24" fill="#e9fff0" filter="url(#s)"/><rect x="850" y="455" width="70" height="100" rx="10" fill="#7bd88f"/><rect x="950" y="455" width="70" height="100" rx="10" fill="#7bd88f"/>
+<rect x="230" y="210" width="120" height="120" rx="24" fill="#ffdf5d" filter="url(#s)"/><rect x="805" y="160" width="135" height="135" rx="28" fill="#ffffff" opacity=".9" filter="url(#s)"/><rect x="910" y="240" width="110" height="110" rx="24" fill="#ff9f1c" opacity=".9" filter="url(#s)"/>
+</svg>
