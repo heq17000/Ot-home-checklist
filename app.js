@@ -1,4 +1,5 @@
 const app = document.getElementById("app");
+const RESULT_STATE_KEY = "homeSafetyGameResultState";
 
 let currentScreen = "main";
 let selectedHouse = null;
@@ -847,7 +848,7 @@ function renderAnswerRings(stage) {
     .filter(item => foundItems.includes(item.id))
     .map(item => {
       const point = getItemPoint(item);
-      const visualSize = Math.max(Math.min(point.radius * 0.72, 7), 4.8);
+      const visualSize = Math.max(Math.min(point.radius * 0.95, 10), 5.5);
       return `
         <div 
           class="answer-ring"
@@ -862,10 +863,15 @@ function renderAnswerRings(stage) {
 function handleImageClick(event) {
   const stage = stages[currentStageIndex];
   const imageArea = document.getElementById("imageArea");
-  const rect = imageArea.getBoundingClientRect();
+  const stageImage = document.getElementById("stageImage");
+  const areaRect = imageArea.getBoundingClientRect();
+  const imagePoint = getImageClickPoint(event, stageImage || imageArea);
+  if (!imagePoint) return;
 
-  const clickX = ((event.clientX - rect.left) / rect.width) * 100;
-  const clickY = ((event.clientY - rect.top) / rect.height) * 100;
+  const clickX = imagePoint.x;
+  const clickY = imagePoint.y;
+  const feedbackX = ((event.clientX - areaRect.left) / areaRect.width) * 100;
+  const feedbackY = ((event.clientY - areaRect.top) / areaRect.height) * 100;
 
   const matchedItem = stage.items.find(item => {
     if (foundItems.includes(item.id)) return false;
@@ -875,14 +881,50 @@ function handleImageClick(event) {
     const dy = clickY - point.y;
     const distance = Math.sqrt(dx * dx + dy * dy);
 
-    return distance <= point.radius;
+    return distance <= point.radius + getTouchRadiusBonus();
   });
 
   if (matchedItem) {
-    handleCorrectClick(matchedItem, clickX, clickY);
+    handleCorrectClick(matchedItem, feedbackX, feedbackY);
   } else {
-    handleWrongClick(clickX, clickY);
+    handleWrongClick(feedbackX, feedbackY);
   }
+}
+
+function getTouchRadiusBonus() {
+  return window.matchMedia("(pointer: coarse), (max-width: 560px)").matches ? 4 : 0;
+}
+
+function getImageClickPoint(event, image) {
+  const rect = image.getBoundingClientRect();
+  if (!rect.width || !rect.height) return null;
+
+  const naturalWidth = image.naturalWidth || rect.width;
+  const naturalHeight = image.naturalHeight || rect.height;
+  const imageRatio = naturalWidth / naturalHeight;
+  const boxRatio = rect.width / rect.height;
+  const objectFit = window.getComputedStyle(image).objectFit;
+
+  let contentLeft = rect.left;
+  let contentTop = rect.top;
+  let contentWidth = rect.width;
+  let contentHeight = rect.height;
+
+  if (objectFit === "contain") {
+    if (imageRatio > boxRatio) {
+      contentHeight = rect.width / imageRatio;
+      contentTop += (rect.height - contentHeight) / 2;
+    } else {
+      contentWidth = rect.height * imageRatio;
+      contentLeft += (rect.width - contentWidth) / 2;
+    }
+  }
+
+  const x = ((event.clientX - contentLeft) / contentWidth) * 100;
+  const y = ((event.clientY - contentTop) / contentHeight) * 100;
+
+  if (x < 0 || x > 100 || y < 0 || y > 100) return null;
+  return { x, y };
 }
 
 function handleCorrectClick(item, x, y) {
@@ -1009,6 +1051,7 @@ function quitGame() {
 }
 
 function renderResult() {
+  saveResultState();
   const completedStageCount = gameAbandoned ? getCompletedStageCount() : stages.length;
   const completedActivities = completedStageCount > 0
     ? stages.slice(0, completedStageCount).map(stage => stage.activity).join(" · ")
@@ -1052,8 +1095,8 @@ function renderResult() {
             <img src="assets/images/instagram-preview.webp" alt="" onerror="fallbackImage(this)">
             <span><strong>인스타그램</strong><small>작업치료와 주거환경 개선 활동 보기</small></span>
           </a>
-          <a class="result-link" href="survey.html"><strong>설문조사</strong><small>네이버폼 준비중</small></a>
-          <a class="result-link" href="resources.html"><strong>더 알아보기</strong><small>관련 정보 제공처</small></a>
+          <a class="result-link" href="survey.html?return=result"><strong>설문조사</strong><small>네이버폼 준비중</small></a>
+          <a class="result-link" href="resources.html?return=result"><strong>더 알아보기</strong><small>관련 정보 제공처</small></a>
         </div>
 
         <div class="ot-summary">
@@ -1132,6 +1175,7 @@ function updateHomeRisk() {
 }
 
 function restartGame() {
+  sessionStorage.removeItem(RESULT_STATE_KEY);
   selectedHouse = null;
   selectedHouseCategory = null;
   currentStageIndex = 0;
@@ -1143,4 +1187,45 @@ function restartGame() {
   render();
 }
 
+function saveResultState() {
+  const state = {
+    selectedHouse,
+    selectedHouseCategory,
+    currentStageIndex,
+    foundItems,
+    totalFoundCount,
+    wrongTryCount,
+    gameAbandoned
+  };
+
+  sessionStorage.setItem(RESULT_STATE_KEY, JSON.stringify(state));
+}
+
+function restoreResultState() {
+  const shouldRestore = new URLSearchParams(window.location.search).get("return") === "result";
+  if (!shouldRestore) return false;
+
+  try {
+    const rawState = sessionStorage.getItem(RESULT_STATE_KEY);
+    if (!rawState) return false;
+
+    const state = JSON.parse(rawState);
+    selectedHouse = state.selectedHouse || null;
+    selectedHouseCategory = state.selectedHouseCategory || null;
+    currentStageIndex = Number.isFinite(state.currentStageIndex) ? state.currentStageIndex : stages.length - 1;
+    foundItems = Array.isArray(state.foundItems) ? state.foundItems : [];
+    totalFoundCount = Number.isFinite(state.totalFoundCount) ? state.totalFoundCount : foundItems.length;
+    wrongTryCount = Number.isFinite(state.wrongTryCount) ? state.wrongTryCount : 0;
+    gameAbandoned = Boolean(state.gameAbandoned);
+    currentScreen = "result";
+
+    window.history.replaceState(null, "", "index.html");
+    return true;
+  } catch (error) {
+    sessionStorage.removeItem(RESULT_STATE_KEY);
+    return false;
+  }
+}
+
+restoreResultState();
 render();
