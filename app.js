@@ -75,16 +75,16 @@ const stages = [
       "apt-elevator": "assets/images/apt-elevator-entry-before.webp",
       "apt-new": "assets/images/apt-new-entry-before.webp",
       "apt-old": "assets/images/apt-old-entry-before.webp",
-      "house-detached": "assets/images/house-detached-entry-before.png",
-      "house-villa": "assets/images/house-villa-entry-before.png"
+      "house-detached": "assets/images/house-detached-entry-before.webp",
+      "house-villa": "assets/images/house-villa-entry-before.webp"
     },
     afterImageByHouse: {
       "apt-corridor": "assets/images/apt-corridor-entry-after.webp",
       "apt-elevator": "assets/images/apt-elevator-entry-after.webp",
       "apt-new": "assets/images/apt-new-entry-after.webp",
       "apt-old": "assets/images/apt-old-entry-after.webp",
-      "house-detached": "assets/images/house-detached-entry-after.png",
-      "house-villa": "assets/images/house-villa-entry-after.png"
+      "house-detached": "assets/images/house-detached-entry-after.webp",
+      "house-villa": "assets/images/house-villa-entry-after.webp"
     },
     mission: "밖에서 집으로 들어올 때 계단, 조명, 접근로가 안전한지 확인해요.",
     activity: "이동하기",
@@ -94,16 +94,16 @@ const stages = [
         id: "light",
         label: "어두운 출입구 조명을 찾아보세요",
         labelByHouse: {
-          "apt-new": "유리문과 바닥이 잘 구분되지 않는 출입구를 찾아보세요"
+          "apt-new": "투명한 유리문 안전 표시가 부족한 부분을 찾아보세요"
         },
         afterText: "공동현관 천장등과 센서등을 보강해 계단과 출입문 주변이 잘 보이게 했어요.",
         afterTextByHouse: {
           "apt-elevator": "엘리베이터 홀까지 이어지는 출입문 주변 조명과 문틀 시인성을 보강했어요.",
-          "apt-new": "유리문 안전 표시와 바닥 조명으로 출입문 위치가 잘 보이게 했어요."
+          "apt-new": "유리문 눈높이에 안전 표시를 붙이고 문틀 대비를 높였어요."
         },
         feedback: "어두우면 계단 높이와 문턱을 놓치기 쉬워요.",
         feedbackByHouse: {
-          "apt-new": "신축 출입구는 깔끔해도 유리문과 바닥 경계가 잘 안 보일 수 있어요."
+          "apt-new": "투명한 유리문은 반사와 배경 때문에 문이 열려 있는지 닫혀 있는지 헷갈릴 수 있어요."
         },
         afterTextByKind: {
           house: "센서등과 풋라이트로 입구와 계단이 잘 보이게 했어요."
@@ -114,7 +114,7 @@ const stages = [
         xByHouse: {
           "apt-corridor": 41,
           "apt-elevator": 41,
-          "apt-new": 30,
+          "apt-new": 50,
           "apt-old": 41,
           "house-detached": 58,
           "house-villa": 49
@@ -122,7 +122,7 @@ const stages = [
         yByHouse: {
           "apt-corridor": 21,
           "apt-elevator": 19,
-          "apt-new": 22,
+          "apt-new": 41,
           "apt-old": 22,
           "house-detached": 15,
           "house-villa": 17
@@ -138,17 +138,17 @@ const stages = [
         },
         labelByHouse: {
           "apt-elevator": "출입문 앞 문턱과 좁은 대기공간을 찾아보세요",
-          "apt-new": "미끄럽고 반사되는 출입구 바닥을 찾아보세요"
+          "apt-new": "젖으면 미끄러지기 쉬운 반사 바닥을 찾아보세요"
         },
         afterText: "계단 옆에 완만한 경사로와 연속 손잡이를 설치해 보행 보조기나 유모차도 접근하기 쉽게 했어요.",
         afterTextByHouse: {
           "apt-elevator": "문턱을 잘 보이게 표시하고 출입문 앞 대기공간과 지지 손잡이를 확보했어요.",
-          "apt-new": "출입구 바닥에 미끄럼방지 처리를 하고 평탄한 접근로를 명확히 했어요."
+          "apt-new": "출입구 바닥에 미끄럼방지 처리를 하고 물기가 고이는 접근로를 정비했어요."
         },
         feedback: "손잡이와 경사로는 균형을 잡고 천천히 이동하도록 도와줘요.",
         feedbackByHouse: {
           "apt-elevator": "엘리베이터 앞은 방향을 바꾸고 기다리는 공간이 필요해요.",
-          "apt-new": "반사되는 바닥은 젖었을 때 미끄럼 위험을 알아차리기 어려워요."
+          "apt-new": "광택 바닥은 물기가 있으면 미끄럼 위험이 커지고 바닥 높이 변화도 알아차리기 어려워요."
         },
         afterTextByKind: {
           house: "경사판이나 손잡이, 조명으로 오르내리기 쉽게 했어요."
@@ -167,7 +167,7 @@ const stages = [
         yByHouse: {
           "apt-corridor": 64,
           "apt-elevator": 64,
-          "apt-new": 70,
+          "apt-new": 79,
           "apt-old": 64,
           "house-detached": 62,
           "house-villa": 64
@@ -175,7 +175,7 @@ const stages = [
         radiusByHouse: {
           "apt-corridor": 13,
           "apt-elevator": 11,
-          "apt-new": 12,
+          "apt-new": 14,
           "apt-old": 13,
           "house-detached": 12,
           "house-villa": 13
@@ -192,17 +192,17 @@ const stages = [
         },
         labelByHouse: {
           "apt-elevator": "출입문 바닥 경계가 잘 보이지 않는 부분을 찾아보세요",
-          "apt-new": "점자블록이나 안내 경로가 부족한 부분을 찾아보세요"
+          "apt-new": "보행로와 화단 턱의 경계가 약한 부분을 찾아보세요"
         },
         afterText: "계단 끝에 노란 미끄럼방지 표시를 붙여 발을 디딜 위치를 쉽게 확인하게 했어요.",
         afterTextByHouse: {
           "apt-elevator": "출입문 바닥 경계와 문턱을 고대비 표시로 알아보기 쉽게 했어요.",
-          "apt-new": "점자블록과 안내 경로, 고대비 표시를 더해 출입 방향을 쉽게 알 수 있게 했어요."
+          "apt-new": "보행로 가장자리와 낮은 턱에 고대비 표시를 더해 발을 디딜 범위를 명확히 했어요."
         },
         feedback: "계단 끝선이 잘 보여야 발을 헛디딜 위험이 줄어요.",
         feedbackByHouse: {
           "apt-elevator": "바닥 경계가 흐리면 발을 끌거나 보행 보조기를 사용할 때 걸릴 수 있어요.",
-          "apt-new": "넓고 깨끗한 공간도 안내 경로가 없으면 방향 찾기가 어려울 수 있어요."
+          "apt-new": "낮은 턱과 보행로 가장자리가 흐리면 시력이 약한 어르신이 발끝을 걸기 쉬워요."
         },
         feedbackByKind: {
           house: "젖거나 울퉁불퉁한 접근 바닥은 발이 밀리거나 발끝이 걸리기 쉬워요."
@@ -216,7 +216,7 @@ const stages = [
         xByHouse: {
           "apt-corridor": 52,
           "apt-elevator": 56,
-          "apt-new": 52,
+          "apt-new": 84,
           "apt-old": 54,
           "house-detached": 45,
           "house-villa": 42
@@ -224,7 +224,7 @@ const stages = [
         yByHouse: {
           "apt-corridor": 82,
           "apt-elevator": 82,
-          "apt-new": 84,
+          "apt-new": 73,
           "apt-old": 80,
           "house-detached": 80,
           "house-villa": 78
@@ -232,7 +232,7 @@ const stages = [
         radiusByHouse: {
           "apt-corridor": 10,
           "apt-elevator": 10,
-          "apt-new": 10,
+          "apt-new": 9,
           "apt-old": 10,
           "house-detached": 12,
           "house-villa": 12
@@ -389,12 +389,12 @@ const stages = [
       },
       {
         id: "remote",
-        label: "손이 닿기 어려운 스위치를 찾아보세요",
-        afterText: "침대 옆에 리모컨형 조명 버튼을 배치했어요.",
-        feedback: "손 닿는 곳의 스위치는 무리한 몸 돌림을 줄여줘요.",
-        x: 95,
-        y: 35,
-        radius: 7
+        label: "불을 켜려고 침대 가장자리로 몸을 뻗어야 하는 조명을 찾아보세요",
+        afterText: "누운 자세에서도 누를 수 있는 리모컨형 조명 버튼을 침대 옆에 배치했어요.",
+        feedback: "불을 켜려고 상체를 길게 뻗으면 침대 가장자리에서 균형을 잃을 수 있어요.",
+        x: 60,
+        y: 43,
+        radius: 9
       }
     ]
   },
@@ -410,12 +410,12 @@ const stages = [
     items: [
       {
         id: "grabbar",
-        label: "안전 손잡이가 없는 부분을 찾아보세요",
-        afterText: "욕실 안전 손잡이를 설치했어요.",
-        feedback: "손잡이는 앉고 일어서거나 방향을 바꿀 때 몸을 지지해줘요.",
-        x: 82,
-        y: 45,
-        radius: 11
+        label: "변기 옆 벽에 안전 손잡이가 없는 부분을 찾아보세요",
+        afterText: "변기 옆 벽에 몸을 지지할 수 있는 안전 손잡이를 설치했어요.",
+        feedback: "변기 자체가 아니라 벽에 단단히 고정된 손잡이가 있어야 앉고 일어설 때 몸을 지지할 수 있어요.",
+        x: 91,
+        y: 53,
+        radius: 9
       },
       {
         id: "floor",

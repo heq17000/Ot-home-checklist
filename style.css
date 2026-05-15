@@ -93,11 +93,7 @@ button:focus-visible {
   position: relative;
   overflow: hidden;
   text-align: center;
-  background: url("assets/images/main-start.png") center/cover no-repeat;
-  background-image: image-set(
-    url("assets/images/main-start.webp") type("image/webp"),
-    url("assets/images/main-start.png") type("image/png")
-  );
+  background: url("assets/images/main-start.webp") center/cover no-repeat;
 }
 
 .sound-toggle {
@@ -134,10 +130,7 @@ button:focus-visible {
 .result-screen {
   background:
     linear-gradient(rgba(8, 12, 25, 0.22), rgba(8, 12, 25, 0.58)),
-    image-set(
-      url("assets/images/result-bg.webp") type("image/webp"),
-      url("assets/images/result-bg.png") type("image/png")
-    ),
+    url("assets/images/result-bg.webp"),
     radial-gradient(circle at top, #263a65 0%, #111827 54%, #070b12 100%);
   background-position: center, center, center;
   background-size: cover, cover, cover;
@@ -2225,12 +2218,7 @@ button:focus-visible {
     left: 0;
     width: 100%;
     height: min(58svh, calc(100vw * 0.5622));
-    background:
-      image-set(
-        url("assets/images/main-start.webp") type("image/webp"),
-        url("assets/images/main-start.png") type("image/png")
-      )
-      center top / contain no-repeat;
+    background: url("assets/images/main-start.webp") center top / contain no-repeat;
     pointer-events: none;
   }
 
@@ -2258,7 +2246,7 @@ button:focus-visible {
   }
 
   body {
-    background: #07101d;
+    background: #fff2c7;
   }
 
   .screen {
@@ -2277,10 +2265,10 @@ button:focus-visible {
 
   .main-screen {
     display: block;
-    height: 100dvh;
-    min-height: 100dvh;
+    height: 112vh;
+    min-height: 112vh;
     padding: 0 12px calc(18px + env(safe-area-inset-bottom));
-    background: url("assets/images/main-start-mobile.png") center / cover no-repeat;
+    background: url("assets/images/main-start-mobile.webp") center / cover no-repeat;
   }
 
   .sound-toggle {

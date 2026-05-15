@@ -40,14 +40,16 @@ home-safety-game/
    └─ images/
       ├─ main-bg.svg
       ├─ apartment-1.svg ~ apartment-4.svg
-      ├─ apartment-entry-before.png / apartment-entry-after.png
-      ├─ house-entry-before.png / house-entry-after.png
-      ├─ entrance-before.svg / entrance-after.svg
-      ├─ hallway-before.svg / hallway-after.svg
-      ├─ living-before.svg / living-after.svg
-      ├─ kitchen-before.svg / kitchen-after.svg
-      ├─ bedroom-before.svg / bedroom-after.svg
-      └─ bathroom-before.svg / bathroom-after.svg
+      ├─ main-start.webp / main-start-mobile.webp
+      ├─ apartment-entry-before.webp / apartment-entry-after.webp
+      ├─ house-detached-entry-before.webp / house-detached-entry-after.webp
+      ├─ house-villa-entry-before.webp / house-villa-entry-after.webp
+      ├─ entrance-before.webp / entrance-after.webp
+      ├─ hallway-before.webp / hallway-after.webp
+      ├─ living-before.webp / living-after.webp
+      ├─ kitchen-before.webp / kitchen-after.webp
+      ├─ bedroom-before.webp / bedroom-after.webp
+      └─ bathroom-before.webp / bathroom-after.webp
 ```
 
 ## 게임 흐름
