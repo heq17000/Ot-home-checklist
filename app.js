@@ -9,6 +9,8 @@ let foundItems = [];
 let totalFoundCount = 0;
 let wrongTryCount = 0;
 let gameAbandoned = false;
+let audioEnabled = localStorage.getItem("homeSafetyGameAudio") === "on";
+let audioContext = null;
 const preloadedImages = new Set();
 
 const houseTypes = [
@@ -437,52 +439,108 @@ const stages = [
   }
 ];
 
-function safePlay(type) {
+function getAudioContext() {
   try {
     const AudioContext = window.AudioContext || window.webkitAudioContext;
-    if (!AudioContext) return;
+    if (!AudioContext) return null;
 
-    const ctx = new AudioContext();
-    const osc = ctx.createOscillator();
-    const gain = ctx.createGain();
+    if (!audioContext) {
+      audioContext = new AudioContext();
+    }
+
+    if (audioContext.state === "suspended") {
+      audioContext.resume();
+    }
+
+    return audioContext;
+  } catch (error) {
+    return null;
+  }
+}
+
+function enableAudio() {
+  audioEnabled = true;
+  localStorage.setItem("homeSafetyGameAudio", "on");
+  getAudioContext();
+}
+
+function toggleAudio() {
+  audioEnabled = !audioEnabled;
+  localStorage.setItem("homeSafetyGameAudio", audioEnabled ? "on" : "off");
+  if (audioEnabled) safePlay("toggle");
+  render();
+}
+
+function safePlay(type) {
+  if (!audioEnabled) return;
+
+  try {
+    const ctx = getAudioContext();
+    if (!ctx) return;
 
     const now = ctx.currentTime;
-    let frequency = 360;
-    let duration = 0.13;
+    const pattern = getSoundPattern(type);
 
-    if (type === "correct") {
-      frequency = 660;
-      duration = 0.14;
-    }
+    pattern.forEach((note, index) => {
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+      const start = now + (note.delay || 0);
+      const duration = note.duration || 0.12;
 
-    if (type === "wrong") {
-      frequency = 150;
-      duration = 0.16;
-    }
+      osc.type = note.type || "sine";
+      osc.frequency.setValueAtTime(note.frequency, start);
+      if (note.endFrequency) {
+        osc.frequency.exponentialRampToValueAtTime(note.endFrequency, start + duration);
+      }
 
-    if (type === "clear") {
-      frequency = 880;
-      duration = 0.28;
-    }
+      gain.gain.setValueAtTime(0.001, start);
+      gain.gain.exponentialRampToValueAtTime(note.volume || 0.16, start + 0.018);
+      gain.gain.exponentialRampToValueAtTime(0.001, start + duration);
 
-    osc.type = "sine";
-    osc.frequency.setValueAtTime(frequency, now);
-    if (type === "clear") {
-      osc.frequency.setValueAtTime(660, now);
-      osc.frequency.exponentialRampToValueAtTime(990, now + duration);
-    }
-
-    gain.gain.setValueAtTime(0.001, now);
-    gain.gain.exponentialRampToValueAtTime(0.22, now + 0.02);
-    gain.gain.exponentialRampToValueAtTime(0.001, now + duration);
-
-    osc.connect(gain);
-    gain.connect(ctx.destination);
-    osc.start(now);
-    osc.stop(now + duration + 0.02);
+      osc.connect(gain);
+      gain.connect(ctx.destination);
+      osc.start(start);
+      osc.stop(start + duration + 0.03 + index * 0.002);
+    });
   } catch (error) {
     // 브라우저 자동재생 정책 또는 오디오 미지원 환경에서는 조용히 무시합니다.
   }
+}
+
+function getSoundPattern(type) {
+  const patterns = {
+    click: [{ frequency: 420, duration: 0.055, volume: 0.06, type: "triangle" }],
+    toggle: [
+      { frequency: 520, duration: 0.07, volume: 0.08, type: "triangle" },
+      { frequency: 780, delay: 0.065, duration: 0.08, volume: 0.09, type: "triangle" }
+    ],
+    correct: [
+      { frequency: 640, duration: 0.08, volume: 0.13, type: "sine" },
+      { frequency: 880, delay: 0.075, duration: 0.1, volume: 0.14, type: "sine" }
+    ],
+    wrong: [{ frequency: 190, endFrequency: 140, duration: 0.18, volume: 0.12, type: "sawtooth" }],
+    clear: [
+      { frequency: 560, duration: 0.08, volume: 0.12, type: "sine" },
+      { frequency: 740, delay: 0.075, duration: 0.08, volume: 0.13, type: "sine" },
+      { frequency: 980, delay: 0.15, duration: 0.16, volume: 0.14, type: "sine" }
+    ],
+    result: [
+      { frequency: 520, duration: 0.09, volume: 0.11, type: "triangle" },
+      { frequency: 660, delay: 0.09, duration: 0.09, volume: 0.12, type: "triangle" },
+      { frequency: 880, delay: 0.18, duration: 0.18, volume: 0.13, type: "triangle" }
+    ]
+  };
+
+  return patterns[type] || patterns.click;
+}
+
+function renderSoundButton() {
+  return `
+    <button class="sound-toggle" onclick="toggleAudio()" aria-label="${audioEnabled ? "소리 끄기" : "소리 켜기"}">
+      <span aria-hidden="true">${audioEnabled ? "♪" : "♪"}</span>
+      ${audioEnabled ? "소리 켜짐" : "소리 꺼짐"}
+    </button>
+  `;
 }
 
 function render() {
@@ -613,6 +671,7 @@ function syncProgressCount() {
 }
 
 function goBack() {
+  safePlay("click");
   if (currentScreen === "guide") {
     currentScreen = "main";
   } else if (currentScreen === "houseSelect") {
@@ -649,6 +708,7 @@ function goBack() {
 function renderMain() {
   app.innerHTML = `
     <section class="screen main-screen">
+      ${renderSoundButton()}
       <div class="main-content">
         <div class="game-kicker">작업치료 주거환경 개선 게임</div>
         <h1 class="game-title">우리집<br>안전점검</h1>
@@ -661,6 +721,8 @@ function renderMain() {
 }
 
 function goToGuide() {
+  enableAudio();
+  safePlay("click");
   currentScreen = "guide";
   render();
 }
@@ -702,6 +764,7 @@ function renderGuide() {
 }
 
 function goToHouseSelect() {
+  safePlay("click");
   currentScreen = "houseSelect";
   selectedHouseCategory = null;
   selectedHouse = null;
@@ -762,17 +825,21 @@ function renderHouseSelect() {
 }
 
 function selectHouseCategory(category) {
+  safePlay("click");
   selectedHouseCategory = category;
   selectedHouse = null;
   renderHouseSelect();
 }
 
 function selectHouse(id) {
+  safePlay("click");
   selectedHouse = id;
   renderHouseSelect();
 }
 
 function startGame() {
+  enableAudio();
+  safePlay("click");
   if (!selectedHouse) {
     alert("우리집과 비슷한 구조를 먼저 선택해주세요.");
     return;
@@ -992,6 +1059,7 @@ function goToAfterView() {
   const stage = stages[currentStageIndex];
   if (foundItems.length < stage.items.length) return;
 
+  safePlay("click");
   currentScreen = "afterView";
   render();
 }
@@ -1018,19 +1086,27 @@ function renderAfterView() {
   const afterImage = getStageAfterImage(stage);
 
   const afterItems = stage.items.map(item => `
-    <div class="after-item">☑ ${getItemAfterText(item)}</div>
+    <div class="after-item">
+      <span class="after-check" aria-hidden="true">✓</span>
+      <span>${getItemAfterText(item)}</span>
+    </div>
   `).join("");
 
   app.innerHTML = `
-    <section class="screen">
+    <section class="screen after-screen">
       ${renderBackButton()}
       <div class="after-card">
         <div class="after-top-actions">
+          <div class="after-progress">공간 ${currentStageIndex + 1} / ${stages.length}</div>
           <button class="quit-btn" onclick="quitGame()">점검 종료</button>
         </div>
-        <h2>${stage.title} 개선 완료!</h2>
-        <img src="${afterImage}" alt="${stage.title} 개선 후 이미지" onerror="fallbackImage(this)">
+        <div class="after-heading">
+          <span>개선 완료</span>
+          <h2>${stage.title}</h2>
+        </div>
+        <img class="after-image" src="${afterImage}" alt="${stage.title} 개선 후 이미지" onerror="fallbackImage(this)">
 
+        <h3 class="after-section-title">바뀐 점</h3>
         <div class="after-list">
           ${afterItems}
         </div>
@@ -1049,6 +1125,7 @@ function renderAfterView() {
 }
 
 function goToNextStage() {
+  safePlay(currentStageIndex >= stages.length - 1 ? "result" : "click");
   if (currentStageIndex >= stages.length - 1) {
     gameAbandoned = false;
     currentScreen = "result";
@@ -1067,6 +1144,7 @@ function getCompletedStageCount() {
 }
 
 function quitGame() {
+  safePlay("click");
   const shouldQuit = confirm("여기까지 점검하고 중간 결과를 볼까요?");
   if (!shouldQuit) return;
 
@@ -1114,7 +1192,7 @@ function renderResult() {
           <button class="result-link result-checklist-btn" onclick="goToHomeChecklist()">
             <strong>우리집 체크리스트</strong><small>다음 장에서 한 번에 확인</small>
           </button>
-          <a class="result-link instagram-link" href="https://www.instagram.com/explore/tags/%EC%9E%91%EC%97%85%EC%B9%98%EB%A3%8C/" target="_blank" rel="noopener">
+          <a class="result-link instagram-link" href="https://www.instagram.com/ot-home-lab/" target="_blank" rel="noopener">
             <img src="assets/images/instagram-preview.webp" alt="" onerror="fallbackImage(this)">
             <span><strong>인스타그램</strong><small>작업치료와 주거환경 개선 활동 보기</small></span>
           </a>
@@ -1155,6 +1233,7 @@ function renderResult() {
 }
 
 function goToHomeChecklist() {
+  safePlay("click");
   currentScreen = "homeChecklist";
   render();
 }
@@ -1229,6 +1308,7 @@ function updateHomeRisk() {
 }
 
 function restartGame() {
+  safePlay("click");
   sessionStorage.removeItem(RESULT_STATE_KEY);
   selectedHouse = null;
   selectedHouseCategory = null;
