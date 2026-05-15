@@ -2,6 +2,7 @@ const app = document.getElementById("app");
 
 let currentScreen = "main";
 let selectedHouse = null;
+let selectedHouseCategory = null;
 let currentStageIndex = 0;
 let foundItems = [];
 let totalFoundCount = 0;
@@ -590,7 +591,12 @@ function goBack() {
   if (currentScreen === "guide") {
     currentScreen = "main";
   } else if (currentScreen === "houseSelect") {
-    currentScreen = "guide";
+    if (selectedHouseCategory) {
+      selectedHouseCategory = null;
+      selectedHouse = null;
+    } else {
+      currentScreen = "guide";
+    }
   } else if (currentScreen === "stage") {
     if (currentStageIndex === 0) {
       foundItems = [];
@@ -634,9 +640,9 @@ function goToGuide() {
 
 function renderGuide() {
   app.innerHTML = `
-    <section class="screen">
+    <section class="screen guide-screen">
       ${renderBackButton()}
-      <div class="panel">
+      <div class="panel guide-panel">
         <h2>게임방법</h2>
         <p>작업치료 관점에서 어르신의 일상생활을 방해하는 환경을 찾아보세요. 정답을 모두 찾으면 활동을 더 안전하고 편하게 만드는 개선 후 모습을 확인할 수 있어요.</p>
 
@@ -670,11 +676,40 @@ function renderGuide() {
 
 function goToHouseSelect() {
   currentScreen = "houseSelect";
+  selectedHouseCategory = null;
+  selectedHouse = null;
   render();
 }
 
 function renderHouseSelect() {
-  const cards = houseTypes.map(house => `
+  if (!selectedHouseCategory) {
+    app.innerHTML = `
+      <section class="screen house-select-screen">
+        ${renderBackButton()}
+        <div class="house-header compact">
+          <h2>우리집은 어떤 유형인가요?</h2>
+          <p>먼저 큰 유형을 고르면, 다음 화면에서 출입구 구조를 선택합니다.</p>
+        </div>
+        <div class="category-grid">
+          <button class="category-card" onclick="selectHouseCategory('apartment')">
+            <img src="assets/images/apartment-4.webp" alt="아파트" onerror="fallbackImage(this)">
+            <span>아파트</span>
+            <small>복도식, 엘리베이터형, 신축, 구축</small>
+          </button>
+          <button class="category-card" onclick="selectHouseCategory('house')">
+            <img src="assets/images/house-1.webp" alt="주택" onerror="fallbackImage(this)">
+            <span>주택</span>
+            <small>단독주택, 다세대·빌라</small>
+          </button>
+        </div>
+      </section>
+    `;
+    return;
+  }
+
+  const cards = houseTypes
+    .filter(house => house.kind === selectedHouseCategory)
+    .map(house => `
     <button class="house-card ${selectedHouse === house.id ? "selected" : ""}" onclick="selectHouse('${house.id}')">
       <img src="${house.image}" alt="${house.title}" onerror="fallbackImage(this)">
       <div class="house-card-title">${house.title}</div>
@@ -683,11 +718,11 @@ function renderHouseSelect() {
   `).join("");
 
   app.innerHTML = `
-    <section class="screen">
+    <section class="screen house-select-screen">
       ${renderBackButton()}
-      <div class="house-header">
-        <h2>우리집과 가장 비슷한 구조를 골라주세요</h2>
-        <p>선택한 유형에 맞춰 집 안 공간의 위험요소를 하나씩 점검합니다.</p>
+      <div class="house-header compact">
+        <h2>${selectedHouseCategory === "apartment" ? "아파트 출입구 구조 선택" : "주택 출입구 구조 선택"}</h2>
+        <p>가장 비슷한 구조를 고르면 해당 출입구 이미지로 시작합니다.</p>
       </div>
       <div class="card-grid">
         ${cards}
@@ -697,6 +732,12 @@ function renderHouseSelect() {
       </div>
     </section>
   `;
+}
+
+function selectHouseCategory(category) {
+  selectedHouseCategory = category;
+  selectedHouse = null;
+  renderHouseSelect();
 }
 
 function selectHouse(id) {
@@ -1006,6 +1047,15 @@ function renderResult() {
           </div>
         </div>
 
+        <div class="result-actions" aria-label="추가 활동">
+          <a class="result-link instagram-link" href="https://www.instagram.com/explore/tags/%EC%9E%91%EC%97%85%EC%B9%98%EB%A3%8C/" target="_blank" rel="noopener">
+            <img src="assets/images/instagram-preview.webp" alt="" onerror="fallbackImage(this)">
+            <span><strong>인스타그램</strong><small>작업치료와 주거환경 개선 활동 보기</small></span>
+          </a>
+          <a class="result-link" href="survey.html"><strong>설문조사</strong><small>네이버폼 준비중</small></a>
+          <a class="result-link" href="resources.html"><strong>더 알아보기</strong><small>관련 정보 제공처</small></a>
+        </div>
+
         <div class="ot-summary">
           <div>
             <strong>활동 기준</strong>
@@ -1048,15 +1098,6 @@ function renderResult() {
           </div>
         </div>
 
-        <div class="result-actions" aria-label="추가 활동">
-          <a class="result-link instagram-link" href="https://www.instagram.com/explore/tags/%EC%9E%91%EC%97%85%EC%B9%98%EB%A3%8C/" target="_blank" rel="noopener">
-            <img src="assets/images/instagram-preview.webp" alt="" onerror="fallbackImage(this)">
-            <span><strong>인스타그램</strong><small>작업치료와 주거환경 개선 활동 보기</small></span>
-          </a>
-          <a class="result-link" href="survey.html"><strong>설문조사</strong><small>네이버폼 준비중</small></a>
-          <a class="result-link" href="resources.html"><strong>더 알아보기</strong><small>관련 정보 제공처</small></a>
-        </div>
-
         <button class="primary-btn" onclick="restartGame()">처음 화면으로</button>
       </div>
     </section>
@@ -1092,6 +1133,7 @@ function updateHomeRisk() {
 
 function restartGame() {
   selectedHouse = null;
+  selectedHouseCategory = null;
   currentStageIndex = 0;
   foundItems = [];
   totalFoundCount = 0;
