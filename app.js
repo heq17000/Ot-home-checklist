@@ -72,13 +72,17 @@ const stages = [
       "apt-corridor": "assets/images/apt-corridor-entry-before.webp",
       "apt-elevator": "assets/images/apt-elevator-entry-before.webp",
       "apt-new": "assets/images/apt-new-entry-before.webp",
-      "apt-old": "assets/images/apt-old-entry-before.webp"
+      "apt-old": "assets/images/apt-old-entry-before.webp",
+      "house-detached": "assets/images/house-detached-entry-before.png",
+      "house-villa": "assets/images/house-villa-entry-before.png"
     },
     afterImageByHouse: {
       "apt-corridor": "assets/images/apt-corridor-entry-after.webp",
       "apt-elevator": "assets/images/apt-elevator-entry-after.webp",
       "apt-new": "assets/images/apt-new-entry-after.webp",
-      "apt-old": "assets/images/apt-old-entry-after.webp"
+      "apt-old": "assets/images/apt-old-entry-after.webp",
+      "house-detached": "assets/images/house-detached-entry-after.png",
+      "house-villa": "assets/images/house-villa-entry-after.png"
     },
     mission: "밖에서 집으로 들어올 때 계단, 조명, 접근로가 안전한지 확인해요.",
     activity: "이동하기",
@@ -109,13 +113,17 @@ const stages = [
           "apt-corridor": 41,
           "apt-elevator": 41,
           "apt-new": 30,
-          "apt-old": 41
+          "apt-old": 41,
+          "house-detached": 58,
+          "house-villa": 49
         },
         yByHouse: {
           "apt-corridor": 21,
           "apt-elevator": 19,
           "apt-new": 22,
-          "apt-old": 22
+          "apt-old": 22,
+          "house-detached": 15,
+          "house-villa": 17
         },
         xByKind: { house: 55 },
         yByKind: { house: 24 }
@@ -150,19 +158,25 @@ const stages = [
           "apt-corridor": 38,
           "apt-elevator": 50,
           "apt-new": 50,
-          "apt-old": 48
+          "apt-old": 48,
+          "house-detached": 52,
+          "house-villa": 49
         },
         yByHouse: {
           "apt-corridor": 64,
           "apt-elevator": 64,
           "apt-new": 70,
-          "apt-old": 64
+          "apt-old": 64,
+          "house-detached": 62,
+          "house-villa": 64
         },
         radiusByHouse: {
           "apt-corridor": 13,
           "apt-elevator": 11,
           "apt-new": 12,
-          "apt-old": 13
+          "apt-old": 13,
+          "house-detached": 12,
+          "house-villa": 13
         },
         xByKind: { house: 52 },
         yByKind: { house: 70 },
@@ -172,7 +186,7 @@ const stages = [
         id: "clutter",
         label: "계단 끝선이 잘 보이지 않는 부분을 찾아보세요",
         labelByKind: {
-          house: "이동을 방해하는 물건을 찾아보세요"
+          house: "미끄럽거나 고르지 않은 접근 바닥을 찾아보세요"
         },
         labelByHouse: {
           "apt-elevator": "출입문 바닥 경계가 잘 보이지 않는 부분을 찾아보세요",
@@ -188,8 +202,11 @@ const stages = [
           "apt-elevator": "바닥 경계가 흐리면 발을 끌거나 보행 보조기를 사용할 때 걸릴 수 있어요.",
           "apt-new": "넓고 깨끗한 공간도 안내 경로가 없으면 방향 찾기가 어려울 수 있어요."
         },
+        feedbackByKind: {
+          house: "젖거나 울퉁불퉁한 접근 바닥은 발이 밀리거나 발끝이 걸리기 쉬워요."
+        },
         afterTextByKind: {
-          house: "신발, 우산, 택배상자를 정리하고 긴 구두주걱과 집게를 세워 허리 굽힘을 줄였어요."
+          house: "접근로 바닥을 고르게 정비하고 미끄럼 방지 처리를 더해 비가 오거나 어두울 때도 발을 안정적으로 디딜 수 있게 했어요."
         },
         x: 53,
         y: 82,
@@ -198,19 +215,25 @@ const stages = [
           "apt-corridor": 52,
           "apt-elevator": 56,
           "apt-new": 52,
-          "apt-old": 54
+          "apt-old": 54,
+          "house-detached": 45,
+          "house-villa": 42
         },
         yByHouse: {
           "apt-corridor": 82,
           "apt-elevator": 82,
           "apt-new": 84,
-          "apt-old": 80
+          "apt-old": 80,
+          "house-detached": 80,
+          "house-villa": 78
         },
         radiusByHouse: {
           "apt-corridor": 10,
           "apt-elevator": 10,
           "apt-new": 10,
-          "apt-old": 10
+          "apt-old": 10,
+          "house-detached": 12,
+          "house-villa": 12
         },
         xByKind: { house: 24 },
         yByKind: { house: 78 },
@@ -469,6 +492,7 @@ function render() {
   if (currentScreen === "stage") renderStage();
   if (currentScreen === "afterView") renderAfterView();
   if (currentScreen === "result") renderResult();
+  if (currentScreen === "homeChecklist") renderHomeChecklist();
 }
 
 function fallbackImage(image) {
@@ -615,6 +639,8 @@ function goBack() {
     foundItems = stages[currentStageIndex].items.map(item => item.id);
     syncProgressCount();
     currentScreen = "afterView";
+  } else if (currentScreen === "homeChecklist") {
+    currentScreen = "result";
   }
 
   render();
@@ -1056,12 +1082,6 @@ function renderResult() {
   const completedActivities = completedStageCount > 0
     ? stages.slice(0, completedStageCount).map(stage => stage.activity).join(" · ")
     : "아직 완료한 생활동작은 없지만, 찾은 항목부터 점검 결과에 반영했어요.";
-  const homeRiskItems = getAllHomeRiskItems().map(item => `
-    <label class="home-risk-item">
-      <input type="checkbox" onchange="updateHomeRisk()">
-      <span><strong>${item.stageTitle}</strong> ${item.label}</span>
-    </label>
-  `).join("");
 
   app.innerHTML = `
     <section class="screen result-screen">
@@ -1091,6 +1111,9 @@ function renderResult() {
         </div>
 
         <div class="result-actions" aria-label="추가 활동">
+          <button class="result-link result-checklist-btn" onclick="goToHomeChecklist()">
+            <strong>우리집 체크리스트</strong><small>다음 장에서 한 번에 확인</small>
+          </button>
           <a class="result-link instagram-link" href="https://www.instagram.com/explore/tags/%EC%9E%91%EC%97%85%EC%B9%98%EB%A3%8C/" target="_blank" rel="noopener">
             <img src="assets/images/instagram-preview.webp" alt="" onerror="fallbackImage(this)">
             <span><strong>인스타그램</strong><small>작업치료와 주거환경 개선 활동 보기</small></span>
@@ -1125,11 +1148,39 @@ function renderResult() {
           </div>
         </div>
 
+        <button class="primary-btn" onclick="restartGame()">처음 화면으로</button>
+      </div>
+    </section>
+  `;
+}
+
+function goToHomeChecklist() {
+  currentScreen = "homeChecklist";
+  render();
+}
+
+function renderHomeChecklist() {
+  saveResultState();
+  const homeRiskItems = getAllHomeRiskItems().map(item => `
+    <label class="home-risk-item">
+      <input type="checkbox" onchange="updateHomeRisk()">
+      <span><strong>${item.stageTitle}</strong> ${item.label}</span>
+    </label>
+  `).join("");
+
+  app.innerHTML = `
+    <section class="screen result-screen checklist-screen">
+      ${renderBackButton()}
+      <div class="panel result-panel checklist-panel">
+        <div class="result-ribbon">우리집 점검</div>
+        <h2>우리 집에는 몇 개가 있나요?</h2>
+        <p>게임에서 찾은 위험요소를 실제 집 기준으로 다시 확인해보세요. 해당하는 항목을 체크하면 현재 위험군을 바로 볼 수 있어요.</p>
+
         <div class="home-risk-check">
           <div class="home-risk-head">
             <div>
-              <h3>우리 집에는 몇 개가 있나요?</h3>
-              <p>아래 항목 중 실제 집에 해당되는 위험요소를 체크해보세요.</p>
+              <h3>우리집 체크리스트</h3>
+              <p>출입구부터 화장실까지 한 번에 점검합니다.</p>
             </div>
             <div class="home-risk-score" id="homeRiskScore">0개<br><span>안전군</span></div>
           </div>
@@ -1141,7 +1192,10 @@ function renderResult() {
           </div>
         </div>
 
-        <button class="primary-btn" onclick="restartGame()">처음 화면으로</button>
+        <div class="checklist-actions">
+          <button class="secondary-btn" onclick="currentScreen='result'; render()">결과로 돌아가기</button>
+          <button class="primary-btn" onclick="restartGame()">처음부터 다시</button>
+        </div>
       </div>
     </section>
   `;
