@@ -941,7 +941,7 @@ function renderAnswerRings(stage) {
     .filter(item => foundItems.includes(item.id))
     .map(item => {
       const point = getItemPoint(item);
-      const visualSize = Math.max(Math.min(point.radius * 0.95, 10), 5.5);
+      const visualSize = Math.max(Math.min(point.radius * 0.68, 7), 4.5);
       return `
         <div 
           class="answer-ring"
@@ -1196,7 +1196,7 @@ function renderResult() {
             <img src="assets/images/instagram-preview.webp" alt="" onerror="fallbackImage(this)">
             <span><strong>인스타그램</strong><small>작업치료와 주거환경 개선 활동 보기</small></span>
           </a>
-          <a class="result-link" href="survey.html?return=result"><strong>설문조사</strong><small>네이버폼 준비중</small></a>
+          <a class="result-link" href="https://form.naver.com/response/m9DRrMbiFxV-UK7sLzZSkQ" target="_blank" rel="noopener"><strong>설문조사</strong><small>네이버폼 바로가기</small></a>
           <a class="result-link" href="resources.html?return=result"><strong>더 알아보기</strong><small>관련 정보 제공처</small></a>
         </div>
 
