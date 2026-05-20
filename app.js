@@ -160,7 +160,7 @@ const stages = [
           "apt-corridor": 38,
           "apt-elevator": 50,
           "apt-new": 50,
-          "apt-old": 48,
+          "apt-old": 38,
           "house-detached": 52,
           "house-villa": 49
         },
@@ -168,17 +168,17 @@ const stages = [
           "apt-corridor": 64,
           "apt-elevator": 64,
           "apt-new": 79,
-          "apt-old": 64,
+          "apt-old": 66,
           "house-detached": 62,
-          "house-villa": 64
+          "house-villa": 61
         },
         radiusByHouse: {
           "apt-corridor": 13,
           "apt-elevator": 11,
           "apt-new": 14,
-          "apt-old": 13,
+          "apt-old": 10,
           "house-detached": 12,
-          "house-villa": 13
+          "house-villa": 11
         },
         xByKind: { house: 52 },
         yByKind: { house: 70 },
@@ -217,17 +217,17 @@ const stages = [
           "apt-corridor": 52,
           "apt-elevator": 56,
           "apt-new": 84,
-          "apt-old": 54,
+          "apt-old": 58,
           "house-detached": 45,
-          "house-villa": 42
+          "house-villa": 34
         },
         yByHouse: {
           "apt-corridor": 82,
           "apt-elevator": 82,
           "apt-new": 73,
-          "apt-old": 80,
+          "apt-old": 82,
           "house-detached": 80,
-          "house-villa": 78
+          "house-villa": 82
         },
         radiusByHouse: {
           "apt-corridor": 10,
@@ -374,9 +374,9 @@ const stages = [
         label: "침대 옆 지지대가 없는 부분을 찾아보세요",
         afterText: "침대 안전바를 설치했어요.",
         feedback: "침대에서 일어날 때 잡을 곳이 있으면 몸을 안정시키기 쉬워요.",
-        x: 61,
-        y: 61,
-        radius: 11
+        x: 67,
+        y: 58,
+        radius: 10
       },
       {
         id: "nightlight",
