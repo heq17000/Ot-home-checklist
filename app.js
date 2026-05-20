@@ -116,16 +116,16 @@ const stages = [
           "apt-elevator": 41,
           "apt-new": 50,
           "apt-old": 41,
-          "house-detached": 58,
-          "house-villa": 49
+          "house-detached": 52,
+          "house-villa": 50
         },
         yByHouse: {
           "apt-corridor": 21,
           "apt-elevator": 19,
           "apt-new": 41,
           "apt-old": 22,
-          "house-detached": 15,
-          "house-villa": 17
+          "house-detached": 25,
+          "house-villa": 28
         },
         xByKind: { house: 55 },
         yByKind: { house: 24 }
@@ -161,23 +161,23 @@ const stages = [
           "apt-elevator": 50,
           "apt-new": 50,
           "apt-old": 38,
-          "house-detached": 52,
-          "house-villa": 49
+          "house-detached": 51,
+          "house-villa": 50
         },
         yByHouse: {
           "apt-corridor": 64,
           "apt-elevator": 64,
           "apt-new": 79,
           "apt-old": 66,
-          "house-detached": 62,
-          "house-villa": 61
+          "house-detached": 56,
+          "house-villa": 64
         },
         radiusByHouse: {
           "apt-corridor": 13,
           "apt-elevator": 11,
           "apt-new": 14,
           "apt-old": 10,
-          "house-detached": 12,
+          "house-detached": 11,
           "house-villa": 11
         },
         xByKind: { house: 52 },
@@ -218,24 +218,24 @@ const stages = [
           "apt-elevator": 56,
           "apt-new": 84,
           "apt-old": 58,
-          "house-detached": 45,
-          "house-villa": 34
+          "house-detached": 42,
+          "house-villa": 28
         },
         yByHouse: {
           "apt-corridor": 82,
           "apt-elevator": 82,
           "apt-new": 73,
           "apt-old": 82,
-          "house-detached": 80,
-          "house-villa": 82
+          "house-detached": 77,
+          "house-villa": 78
         },
         radiusByHouse: {
           "apt-corridor": 10,
           "apt-elevator": 10,
           "apt-new": 9,
           "apt-old": 10,
-          "house-detached": 12,
-          "house-villa": 12
+          "house-detached": 11,
+          "house-villa": 11
         },
         xByKind: { house: 24 },
         yByKind: { house: 78 },
