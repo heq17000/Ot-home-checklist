@@ -2,6 +2,8 @@
   --bg: #111827;
   --panel: #ffffff;
   --text: #172033;
+  --text-strong: #10203d;
+  --text-muted: #4d5a70;
   --blue: #2f6bff;
   --yellow: #ffd84d;
   --orange: #ff9f1c;
@@ -300,14 +302,17 @@ button:focus-visible {
 
 .house-header h2 {
   margin: 0 0 8px;
+  color: var(--text-strong);
   font-size: clamp(28px, 5vw, 46px);
   letter-spacing: 0;
+  text-shadow: 0 1px 0 rgba(255, 255, 255, 0.65);
 }
 
 .house-header p {
   margin: 0;
-  opacity: 0.84;
+  color: var(--text-muted);
   font-size: 17px;
+  font-weight: 800;
 }
 
 .card-grid {
@@ -320,7 +325,7 @@ button:focus-visible {
 .house-card {
   min-width: 0;
   background: #ffffff;
-  color: var(--text);
+  color: var(--text-strong);
   border-radius: 24px;
   overflow: hidden;
   box-shadow: var(--shadow);
@@ -348,6 +353,7 @@ button:focus-visible {
 
 .house-card-title {
   padding: 14px 14px 4px;
+  color: #132b5f;
   font-size: 18px;
   font-weight: 1000;
   text-align: center;
@@ -355,7 +361,7 @@ button:focus-visible {
 
 .house-card-desc {
   padding: 0 14px 14px;
-  color: #5b6475;
+  color: var(--text-muted);
   font-size: 14px;
   text-align: center;
 }
@@ -375,7 +381,7 @@ button:focus-visible {
   border: 0;
   border-radius: 24px;
   background: #fff;
-  color: var(--text);
+  color: var(--text-strong);
   box-shadow: var(--shadow);
   text-align: center;
   cursor: pointer;
@@ -391,12 +397,13 @@ button:focus-visible {
 }
 
 .category-card span {
+  color: #132b5f;
   font-size: 24px;
   font-weight: 1000;
 }
 
 .category-card small {
-  color: #5b6475;
+  color: var(--text-muted);
   font-size: 15px;
   font-weight: 800;
   line-height: 1.35;
@@ -404,6 +411,13 @@ button:focus-visible {
 
 .house-actions {
   margin-top: 24px;
+}
+
+.house-select-screen {
+  background:
+    radial-gradient(circle at 50% 0%, rgba(238, 255, 240, 0.95) 0%, rgba(255, 248, 218, 0.9) 42%, rgba(255, 242, 199, 0.96) 100%),
+    #fff2c7;
+  color: var(--text-strong);
 }
 
 .stage-screen {
@@ -2435,7 +2449,7 @@ button:focus-visible {
     z-index: 20;
     margin: 10px -2px 0;
     padding: 8px 0 0;
-    background: linear-gradient(180deg, rgba(17, 24, 39, 0), #111827 36%);
+    background: linear-gradient(180deg, rgba(255, 242, 199, 0), #fff2c7 42%);
   }
 
   .stage-screen {
