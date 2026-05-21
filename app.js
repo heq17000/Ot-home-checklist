@@ -577,6 +577,7 @@ function preloadImage(src) {
 
   preloadedImages.add(src);
   const image = new Image();
+  image.decoding = "async";
   image.src = src;
 }
 
@@ -901,7 +902,7 @@ function renderStage() {
 
       <div class="stage-layout">
         <div class="image-area" id="imageArea" onclick="handleImageClick(event)">
-          <img class="stage-image" id="stageImage" src="${beforeImage}" alt="${stage.title} 개선 전 이미지" onerror="fallbackImage(this)">
+          <img class="stage-image" id="stageImage" src="${beforeImage}" alt="${stage.title} 개선 전 이미지" decoding="async" fetchpriority="high" onerror="fallbackImage(this)">
           ${renderAnswerRings(stage)}
         </div>
 
@@ -1126,7 +1127,7 @@ function renderAfterView() {
           <span>개선 완료</span>
           <h2>${stage.title}</h2>
         </div>
-        <img class="after-image" src="${afterImage}" alt="${stage.title} 개선 후 이미지" onerror="fallbackImage(this)">
+        <img class="after-image" src="${afterImage}" alt="${stage.title} 개선 후 이미지" decoding="async" fetchpriority="high" onerror="fallbackImage(this)">
 
         <h3 class="after-section-title">바뀐 점</h3>
         <div class="after-list">
@@ -1186,6 +1187,7 @@ function renderResult() {
   const safePointCount = Math.min(totalFoundCount, totalItemCount);
   const riskPointCount = Math.max(totalItemCount - safePointCount, 0);
   const homeRiskSummary = getHomeRiskSummary(homeRiskCheckedIds.length);
+  const priorityItems = getPriorityRecommendations();
 
   app.innerHTML = `
     <section class="screen result-screen">
@@ -1224,6 +1226,13 @@ function renderResult() {
           <span>체크리스트로 실제 집을 다시 확인하고, 설문과 인스타그램 참여로 다음 교육 자료 제작에 도움을 줄 수 있어요.</span>
         </div>
 
+        <div class="priority-card">
+          <strong>우선 개선 3가지</strong>
+          <ol>
+            ${priorityItems.map(item => `<li>${item}</li>`).join("")}
+          </ol>
+        </div>
+
         <div class="result-actions" aria-label="추가 활동">
           <a class="result-link instagram-link" href="https://www.instagram.com/ot_home_lab?igsh=YjQ1Zmdmc2VqbTNu" target="_blank" rel="noopener">
             <span class="social-logo instagram-logo" aria-hidden="true"></span>
@@ -1231,13 +1240,14 @@ function renderResult() {
           </a>
           <a class="result-link survey-link" href="https://form.naver.com/response/m9DRrMbiFxV-UK7sLzZSkQ" target="_blank" rel="noopener">
             <span class="social-logo naver-logo" aria-hidden="true">N</span>
-            <span><strong>네이버폼 설문하러가기</strong><small>게임 후 의견을 남겨주세요</small></span>
+            <span><strong>네이버폼 설문하러가기</strong><small>약 5분, 게임 후 의견을 남겨주세요</small></span>
           </a>
           <button class="result-link result-checklist-btn" onclick="goToHomeChecklist()">
             <strong>체크리스트 다시 보기</strong><small>체크 수정</small>
           </button>
           <a class="result-link resource-link" href="resources.html?return=result"><strong>더 알아보기</strong><small>보조도구와 주거환경 정보 보기</small></a>
         </div>
+        <button class="secondary-btn share-result-btn" onclick="shareResult()">결과 공유하기</button>
 
         <div class="ot-summary">
           <div>
@@ -1284,7 +1294,7 @@ function renderResultPrompt() {
         <p>짧은 설문은 다음 교육 자료와 게임 개선에 바로 도움이 됩니다.</p>
         <a class="prompt-survey-btn" href="https://form.naver.com/response/m9DRrMbiFxV-UK7sLzZSkQ" target="_blank" rel="noopener" onclick="dismissResultPrompt()">
           <span class="social-logo naver-logo" aria-hidden="true">N</span>
-          <span><strong>네이버폼 설문하러가기</strong><small>1분 정도 걸려요</small></span>
+          <span><strong>네이버폼 설문하러가기</strong><small>5분 정도 걸려요</small></span>
         </a>
         <button class="prompt-secondary-btn" onclick="dismissResultPrompt()">결과 먼저 볼게요</button>
       </div>
@@ -1386,6 +1396,47 @@ function getHomeRiskSummary(checkedCount) {
   }
 
   return { checkedCount, safeCount, totalItemCount, group, className, shortText, text };
+}
+
+function getPriorityRecommendations() {
+  const allRiskItems = getAllHomeRiskItems();
+  const checkedItems = homeRiskCheckedIds
+    .map(id => allRiskItems.find(item => item.id === id))
+    .filter(Boolean);
+
+  const sourceItems = checkedItems.length ? checkedItems : [
+    { stageTitle: "욕실", label: "미끄럼방지, 안전손잡이, 목욕의자" },
+    { stageTitle: "현관", label: "앉을 곳, 잡을 곳, 긴 구두주걱" },
+    { stageTitle: "야간 이동", label: "침실과 복도 조명, 전선 정리" }
+  ];
+
+  return sourceItems.slice(0, 3).map(item => `${item.stageTitle}: ${item.label}`);
+}
+
+async function shareResult() {
+  safePlay("click");
+  const summary = getHomeRiskSummary(homeRiskCheckedIds.length);
+  const shareText = `우리집 안전점검 결과\n${getSelectedHouseTitle()} · ${summary.group}\n안전 ${summary.safeCount}/${summary.totalItemCount}, 위험 ${summary.checkedCount}/${summary.totalItemCount}\n${location.href.split("#")[0]}`;
+
+  try {
+    if (navigator.share) {
+      await navigator.share({
+        title: "우리집 안전점검 결과",
+        text: shareText
+      });
+      return;
+    }
+
+    if (navigator.clipboard?.writeText) {
+      await navigator.clipboard.writeText(shareText);
+      alert("결과 요약을 복사했어요. 카카오톡이나 문자에 붙여넣어 공유할 수 있어요.");
+      return;
+    }
+  } catch (error) {
+    return;
+  }
+
+  alert(shareText);
 }
 
 function finishHomeChecklist() {
