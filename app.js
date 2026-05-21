@@ -9,6 +9,7 @@ let foundItems = [];
 let totalFoundCount = 0;
 let wrongTryCount = 0;
 let gameAbandoned = false;
+let homeRiskCheckedIds = [];
 let audioEnabled = localStorage.getItem("homeSafetyGameAudio") === "on";
 let audioContext = null;
 const preloadedImages = new Set();
@@ -850,6 +851,7 @@ function startGame() {
   foundItems = [];
   totalFoundCount = 0;
   wrongTryCount = 0;
+  homeRiskCheckedIds = [];
   gameAbandoned = false;
   currentScreen = "stage";
   render();
@@ -1143,10 +1145,10 @@ function renderAfterView() {
 }
 
 function goToNextStage() {
-  safePlay(currentStageIndex >= stages.length - 1 ? "result" : "click");
+  safePlay(currentStageIndex >= stages.length - 1 ? "clear" : "click");
   if (currentStageIndex >= stages.length - 1) {
     gameAbandoned = false;
-    currentScreen = "result";
+    currentScreen = "homeChecklist";
     render();
     return;
   }
@@ -1181,6 +1183,7 @@ function renderResult() {
   const totalItemCount = getTotalItemCount();
   const safePointCount = Math.min(totalFoundCount, totalItemCount);
   const riskPointCount = Math.max(totalItemCount - safePointCount, 0);
+  const homeRiskSummary = getHomeRiskSummary(homeRiskCheckedIds.length);
 
   app.innerHTML = `
     <section class="screen result-screen">
@@ -1194,6 +1197,12 @@ function renderResult() {
           <strong>오늘 점검 범위</strong>
           <span>총 6개 공간 · 18개 점검 항목</span>
           <small>안전 확인 ${safePointCount}개 / 추가 점검 필요 ${riskPointCount}개</small>
+        </div>
+
+        <div class="result-overview home-risk-summary-card ${homeRiskSummary.className}">
+          <strong>우리집 체크리스트 결과</strong>
+          <span>안전 ${homeRiskSummary.safeCount}/${homeRiskSummary.totalItemCount} · 위험 ${homeRiskSummary.checkedCount}/${homeRiskSummary.totalItemCount}</span>
+          <small>${homeRiskSummary.group}: ${homeRiskSummary.shortText}</small>
         </div>
 
         <div class="result-score-board">
@@ -1221,7 +1230,7 @@ function renderResult() {
 
         <div class="result-actions" aria-label="추가 활동">
           <button class="result-link result-checklist-btn" onclick="goToHomeChecklist()">
-            <strong>우리집 체크리스트</strong><small>18개 항목으로 실제 집 위험군 확인</small>
+            <strong>체크리스트 다시 보기</strong><small>체크한 항목을 수정할 수 있어요</small>
           </button>
           <a class="result-link instagram-link" href="https://www.instagram.com/ot_home_lab?igsh=YjQ1Zmdmc2VqbTNu" target="_blank" rel="noopener">
             <img src="assets/images/instagram-preview.webp" alt="" onerror="fallbackImage(this)">
@@ -1273,18 +1282,20 @@ function renderHomeChecklist() {
   saveResultState();
   const homeRiskItems = getAllHomeRiskItems().map(item => `
     <label class="home-risk-item">
-      <input type="checkbox" onchange="updateHomeRisk()">
+      <input type="checkbox" value="${item.id}" ${homeRiskCheckedIds.includes(item.id) ? "checked" : ""} onchange="updateHomeRisk()">
       <span><strong>${item.stageTitle}</strong> ${item.label}</span>
     </label>
   `).join("");
+  const homeRiskSummary = getHomeRiskSummary(homeRiskCheckedIds.length);
 
   app.innerHTML = `
     <section class="screen result-screen checklist-screen">
       ${renderBackButton()}
       <div class="panel result-panel checklist-panel">
-        <div class="result-ribbon">우리집 점검</div>
-        <h2>우리 집에는 몇 개가 있나요?</h2>
-        <p>게임에서 찾은 위험요소를 실제 집 기준으로 다시 확인해보세요. 해당하는 항목을 체크하면 현재 위험군을 바로 볼 수 있어요.</p>
+        <div class="brand-mark">OT HOME LAB</div>
+        <div class="result-ribbon">결과 전 마지막 점검</div>
+        <h2>실제 우리 집에는 몇 개가 있나요?</h2>
+        <p>게임에서 찾은 위험요소를 실제 집 기준으로 체크해보세요. 체크한 내용은 다음 결과창에 함께 표시됩니다.</p>
 
         <div class="home-risk-check">
           <div class="home-risk-head">
@@ -1292,19 +1303,19 @@ function renderHomeChecklist() {
               <h3>우리집 체크리스트</h3>
               <p>출입구부터 화장실까지 18개 항목을 한 번에 점검합니다.</p>
             </div>
-            <div class="home-risk-score" id="homeRiskScore">안전 18/18<br><span>위험 0/18 · 안전군</span></div>
+            <div class="home-risk-score" id="homeRiskScore">안전 ${homeRiskSummary.safeCount}/${homeRiskSummary.totalItemCount}<br><span>위험 ${homeRiskSummary.checkedCount}/${homeRiskSummary.totalItemCount} · ${homeRiskSummary.group}</span></div>
           </div>
           <div class="home-risk-list">
             ${homeRiskItems}
           </div>
-          <div class="home-risk-result safe" id="homeRiskResult">
-            안전군: 현재 체크된 위험요소가 적습니다. 그래도 욕실, 현관, 야간 이동 경로는 주기적으로 다시 확인해보세요.
+          <div class="home-risk-result ${homeRiskSummary.className}" id="homeRiskResult">
+            ${homeRiskSummary.text}
           </div>
         </div>
 
         <div class="checklist-actions">
-          <button class="secondary-btn" onclick="currentScreen='result'; render()">결과로 돌아가기</button>
-          <button class="primary-btn" onclick="restartGame()">처음부터 다시</button>
+          <button class="secondary-btn" onclick="finishHomeChecklist()">바로 결과 보기</button>
+          <button class="primary-btn" onclick="finishHomeChecklist()">체크 반영하고 결과 보기</button>
         </div>
       </div>
     </section>
@@ -1312,32 +1323,48 @@ function renderHomeChecklist() {
 }
 
 function updateHomeRisk() {
-  const checkedCount = document.querySelectorAll(".home-risk-item input:checked").length;
+  homeRiskCheckedIds = Array.from(document.querySelectorAll(".home-risk-item input:checked")).map(input => input.value);
+  saveResultState();
+  const checkedCount = homeRiskCheckedIds.length;
   const score = document.getElementById("homeRiskScore");
   const result = document.getElementById("homeRiskResult");
   if (!score || !result) return;
+  const summary = getHomeRiskSummary(checkedCount);
+
+  score.innerHTML = `안전 ${summary.safeCount}/${summary.totalItemCount}<br><span>위험 ${summary.checkedCount}/${summary.totalItemCount} · ${summary.group}</span>`;
+  result.className = `home-risk-result ${summary.className}`;
+  result.textContent = summary.text;
+}
+
+function getHomeRiskSummary(checkedCount) {
   const totalItemCount = getTotalItemCount();
   const safeCount = Math.max(totalItemCount - checkedCount, 0);
-
   let group = "안전군";
   let className = "safe";
+  let shortText = "위험요소가 적습니다";
   let text = "안전군: 현재 체크된 위험요소가 적습니다. 그래도 욕실, 현관, 야간 이동 경로는 주기적으로 다시 확인해보세요.";
 
   if (checkedCount >= 4 && checkedCount <= 8) {
     group = "주의군";
     className = "caution";
+    shortText = "자주 쓰는 공간부터 개선이 필요합니다";
     text = "주의군: 집 안에서 불편하거나 위험한 부분이 여러 개 보입니다. 자주 쓰는 공간부터 정리, 조명, 미끄럼방지 개선을 시작해보세요.";
   }
 
   if (checkedCount >= 9) {
     group = "위험군";
     className = "danger";
+    shortText = "전문가와 함께 점검을 권장합니다";
     text = "위험군: 낙상이나 일상생활 불편 위험이 높을 수 있습니다. 가족, 작업치료사, 보건소, 복지관 등과 함께 주거환경 점검을 받아보는 것이 좋습니다.";
   }
 
-  score.innerHTML = `안전 ${safeCount}/${totalItemCount}<br><span>위험 ${checkedCount}/${totalItemCount} · ${group}</span>`;
-  result.className = `home-risk-result ${className}`;
-  result.textContent = text;
+  return { checkedCount, safeCount, totalItemCount, group, className, shortText, text };
+}
+
+function finishHomeChecklist() {
+  safePlay("result");
+  currentScreen = "result";
+  render();
 }
 
 function restartGame() {
@@ -1350,6 +1377,7 @@ function restartGame() {
   totalFoundCount = 0;
   wrongTryCount = 0;
   gameAbandoned = false;
+  homeRiskCheckedIds = [];
   currentScreen = "main";
   render();
 }
@@ -1362,7 +1390,8 @@ function saveResultState() {
     foundItems,
     totalFoundCount,
     wrongTryCount,
-    gameAbandoned
+    gameAbandoned,
+    homeRiskCheckedIds
   };
 
   sessionStorage.setItem(RESULT_STATE_KEY, JSON.stringify(state));
@@ -1384,6 +1413,7 @@ function restoreResultState() {
     totalFoundCount = Number.isFinite(state.totalFoundCount) ? state.totalFoundCount : foundItems.length;
     wrongTryCount = Number.isFinite(state.wrongTryCount) ? state.wrongTryCount : 0;
     gameAbandoned = Boolean(state.gameAbandoned);
+    homeRiskCheckedIds = Array.isArray(state.homeRiskCheckedIds) ? state.homeRiskCheckedIds : [];
     currentScreen = "result";
 
     window.history.replaceState(null, "", "index.html");
