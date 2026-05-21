@@ -10,6 +10,7 @@ let totalFoundCount = 0;
 let wrongTryCount = 0;
 let gameAbandoned = false;
 let homeRiskCheckedIds = [];
+let resultPromptDismissed = false;
 let audioEnabled = localStorage.getItem("homeSafetyGameAudio") === "on";
 let audioContext = null;
 const preloadedImages = new Set();
@@ -852,6 +853,7 @@ function startGame() {
   totalFoundCount = 0;
   wrongTryCount = 0;
   homeRiskCheckedIds = [];
+  resultPromptDismissed = false;
   gameAbandoned = false;
   currentScreen = "stage";
   render();
@@ -1224,10 +1226,13 @@ function renderResult() {
 
         <div class="result-actions" aria-label="추가 활동">
           <a class="result-link instagram-link" href="https://www.instagram.com/ot_home_lab?igsh=YjQ1Zmdmc2VqbTNu" target="_blank" rel="noopener">
-            <img src="assets/images/instagram-preview.webp" alt="" onerror="fallbackImage(this)">
+            <span class="social-logo instagram-logo" aria-hidden="true"></span>
             <span><strong>인스타그램</strong><small>ot_home_lab에서 개선 사례 더 보기</small></span>
           </a>
-          <a class="result-link survey-link" href="https://form.naver.com/response/m9DRrMbiFxV-UK7sLzZSkQ" target="_blank" rel="noopener"><strong>네이버폼 설문하러가기</strong><small>게임 후 의견을 남겨주세요</small></a>
+          <a class="result-link survey-link" href="https://form.naver.com/response/m9DRrMbiFxV-UK7sLzZSkQ" target="_blank" rel="noopener">
+            <span class="social-logo naver-logo" aria-hidden="true">N</span>
+            <span><strong>네이버폼 설문하러가기</strong><small>게임 후 의견을 남겨주세요</small></span>
+          </a>
           <button class="result-link result-checklist-btn" onclick="goToHomeChecklist()">
             <strong>체크리스트 다시 보기</strong><small>체크 수정</small>
           </button>
@@ -1262,8 +1267,36 @@ function renderResult() {
 
         <button class="primary-btn" onclick="restartGame()">처음 화면으로</button>
       </div>
+      ${renderResultPrompt()}
     </section>
   `;
+}
+
+function renderResultPrompt() {
+  if (resultPromptDismissed) return "";
+
+  return `
+    <div class="result-prompt-backdrop" role="dialog" aria-modal="true" aria-labelledby="resultPromptTitle">
+      <div class="result-prompt">
+        <button class="prompt-close-btn" onclick="dismissResultPrompt()" aria-label="팝업 닫기">×</button>
+        <div class="prompt-badge">잠깐!</div>
+        <h3 id="resultPromptTitle">결과를 보기 전에<br>이것 한 번만 해주세요</h3>
+        <p>짧은 설문은 다음 교육 자료와 게임 개선에 바로 도움이 됩니다.</p>
+        <a class="prompt-survey-btn" href="https://form.naver.com/response/m9DRrMbiFxV-UK7sLzZSkQ" target="_blank" rel="noopener" onclick="dismissResultPrompt()">
+          <span class="social-logo naver-logo" aria-hidden="true">N</span>
+          <span><strong>네이버폼 설문하러가기</strong><small>1분 정도 걸려요</small></span>
+        </a>
+        <button class="prompt-secondary-btn" onclick="dismissResultPrompt()">결과 먼저 볼게요</button>
+      </div>
+    </div>
+  `;
+}
+
+function dismissResultPrompt() {
+  resultPromptDismissed = true;
+  saveResultState();
+  const prompt = document.querySelector(".result-prompt-backdrop");
+  if (prompt) prompt.remove();
 }
 
 function goToHomeChecklist() {
@@ -1372,6 +1405,7 @@ function restartGame() {
   wrongTryCount = 0;
   gameAbandoned = false;
   homeRiskCheckedIds = [];
+  resultPromptDismissed = false;
   currentScreen = "main";
   render();
 }
@@ -1385,7 +1419,8 @@ function saveResultState() {
     totalFoundCount,
     wrongTryCount,
     gameAbandoned,
-    homeRiskCheckedIds
+    homeRiskCheckedIds,
+    resultPromptDismissed
   };
 
   sessionStorage.setItem(RESULT_STATE_KEY, JSON.stringify(state));
@@ -1408,6 +1443,7 @@ function restoreResultState() {
     wrongTryCount = Number.isFinite(state.wrongTryCount) ? state.wrongTryCount : 0;
     gameAbandoned = Boolean(state.gameAbandoned);
     homeRiskCheckedIds = Array.isArray(state.homeRiskCheckedIds) ? state.homeRiskCheckedIds : [];
+    resultPromptDismissed = Boolean(state.resultPromptDismissed);
     currentScreen = "result";
 
     window.history.replaceState(null, "", "index.html");
