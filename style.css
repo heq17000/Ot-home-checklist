@@ -283,6 +283,18 @@ button:focus-visible {
   font-weight: 900;
 }
 
+.guide-total {
+  margin: -10px 0 16px;
+  padding: 12px 14px;
+  border-radius: 16px;
+  background: #fff8da;
+  color: #3a2a00;
+  font-size: 16px;
+  font-weight: 1000;
+  text-align: center;
+  box-shadow: inset 0 0 0 2px rgba(255, 216, 77, 0.42);
+}
+
 .flow-number {
   width: 48px;
   height: 48px;
@@ -454,6 +466,16 @@ button:focus-visible {
   font-weight: 900;
 }
 
+.stage-total-chip {
+  padding: 9px 14px;
+  border-radius: 999px;
+  background: rgba(255, 248, 218, 0.96);
+  color: #3a2a00;
+  font-size: 14px;
+  font-weight: 1000;
+  box-shadow: 0 8px 18px rgba(0, 0, 0, 0.14);
+}
+
 .stage-actions {
   display: inline-flex;
   align-items: center;
@@ -519,6 +541,19 @@ button:focus-visible {
   font-size: 16px;
   line-height: 1.4;
   font-weight: 850;
+}
+
+.mission-card em {
+  display: inline-block;
+  width: fit-content;
+  margin-top: 8px;
+  padding: 8px 12px;
+  border-radius: 999px;
+  background: #e9fff0;
+  color: #126a2b;
+  font-style: normal;
+  font-size: 15px;
+  font-weight: 1000;
 }
 
 .stage-layout {
@@ -672,6 +707,18 @@ button:focus-visible {
   font-size: 19px;
 }
 
+.stage-skip-btn {
+  width: 100%;
+  margin-top: 10px;
+  min-height: 50px;
+  border-radius: 18px;
+  background: #f0f5ff;
+  color: #1d3d8f;
+  font-size: 17px;
+  font-weight: 1000;
+  box-shadow: inset 0 0 0 2px rgba(47, 107, 255, 0.18);
+}
+
 .after-card {
   width: min(920px, 100%);
   background: var(--panel);
@@ -820,6 +867,48 @@ button:focus-visible {
   margin: 24px 0;
 }
 
+.result-overview,
+.stay-note {
+  display: grid;
+  gap: 6px;
+  margin: 16px 0;
+  padding: 16px 18px;
+  border-radius: 18px;
+  background: #f0f5ff;
+  color: #172033;
+  box-shadow: inset 0 0 0 2px rgba(47, 107, 255, 0.1);
+}
+
+.result-overview strong,
+.stay-note strong {
+  color: #1d3d8f;
+  font-size: 18px;
+  font-weight: 1000;
+}
+
+.result-overview span,
+.stay-note span {
+  color: #243047;
+  font-size: 16px;
+  line-height: 1.45;
+  font-weight: 900;
+}
+
+.result-overview small {
+  color: #126a2b;
+  font-size: 15px;
+  font-weight: 1000;
+}
+
+.stay-note {
+  background: #fff8da;
+  box-shadow: inset 0 0 0 2px rgba(255, 216, 77, 0.42);
+}
+
+.stay-note strong {
+  color: #664600;
+}
+
 .score-card {
   position: relative;
   overflow: hidden;
@@ -870,6 +959,24 @@ button:focus-visible {
   color: #6f5207;
   font-size: 16px;
   font-weight: 1000;
+}
+
+.score-card:nth-child(1) {
+  background: linear-gradient(180deg, #effff3 0%, #dff8e7 100%);
+  color: #064d20;
+  box-shadow: inset 0 0 0 3px rgba(46, 204, 113, 0.22), 0 9px 0 #8bc99d, 0 18px 30px rgba(0, 0, 0, 0.14);
+}
+
+.score-card:nth-child(2) {
+  background: linear-gradient(180deg, #eef4ff 0%, #dce8ff 100%);
+  color: #173b9d;
+  box-shadow: inset 0 0 0 3px rgba(47, 107, 255, 0.18), 0 9px 0 #9ab3ee, 0 18px 30px rgba(0, 0, 0, 0.14);
+}
+
+.score-card:nth-child(3) {
+  background: linear-gradient(180deg, #fff8da 0%, #ffe8c7 100%);
+  color: #7a3500;
+  box-shadow: inset 0 0 0 3px rgba(255, 159, 28, 0.24), 0 9px 0 #d59c25, 0 18px 30px rgba(0, 0, 0, 0.14);
 }
 
 .result-badge {
@@ -1074,6 +1181,18 @@ button:focus-visible {
   background: #e9fff0;
   color: #126a2b;
   box-shadow: inset 0 0 0 2px rgba(46, 204, 113, 0.28);
+}
+
+.survey-link {
+  background: #fff1e8;
+  color: #8b2d13;
+  box-shadow: inset 0 0 0 2px rgba(255, 159, 28, 0.28);
+}
+
+.resource-link {
+  background: #eef4ff;
+  color: #1d3d8f;
+  box-shadow: inset 0 0 0 2px rgba(47, 107, 255, 0.18);
 }
 
 .result-link small {
@@ -1970,6 +2089,7 @@ button:focus-visible {
   }
 
   .stage-progress,
+  .stage-total-chip,
   .quit-btn {
     min-height: 32px;
     padding: 7px 8px;
@@ -1977,8 +2097,18 @@ button:focus-visible {
     font-size: 12px;
   }
 
+  .stage-total-chip {
+    display: none;
+  }
+
   .mission-card {
     margin-bottom: 6px;
+  }
+
+  .mission-card em {
+    margin-top: 5px;
+    padding: 6px 9px;
+    font-size: 12px;
   }
 
   .stage-layout {
@@ -2065,6 +2195,25 @@ button:focus-visible {
     grid-template-columns: repeat(3, minmax(0, 1fr));
     gap: 6px;
     margin: 10px 0;
+  }
+
+  .result-overview,
+  .stay-note {
+    margin: 10px 0;
+    padding: 10px 12px;
+    border-radius: 14px;
+  }
+
+  .result-overview strong,
+  .stay-note strong {
+    font-size: 14px;
+  }
+
+  .result-overview span,
+  .stay-note span,
+  .result-overview small {
+    font-size: 11.5px;
+    line-height: 1.35;
   }
 
   .score-card {

@@ -24,22 +24,22 @@ const houseTypes = [
   {
     id: "apt-elevator",
     kind: "apartment",
-    title: "엘리베이터 앞 현관형",
-    desc: "엘리베이터에서 바로 세대 현관으로 이동하는 구조",
+    title: "높은층 아파트",
+    desc: "엘리베이터로 공동현관과 세대 현관을 오가는 구조",
     image: "assets/images/apartment-2.webp"
   },
   {
     id: "apt-new",
     kind: "apartment",
-    title: "신축 아파트",
-    desc: "밝고 넓은 공동현관과 자동문이 있는 구조",
+    title: "낮은층 아파트",
+    desc: "낮은 층 출입구와 공동현관을 자주 이용하는 구조",
     image: "assets/images/apartment-3.webp"
   },
   {
     id: "apt-old",
     kind: "apartment",
-    title: "구축 아파트",
-    desc: "낡은 신발장과 좁은 세대 현관이 많은 구조",
+    title: "계단 이용 아파트",
+    desc: "엘리베이터보다 계단 이동이 잦은 구조",
     image: "assets/images/apartment-4.webp"
   },
   {
@@ -752,10 +752,11 @@ function renderGuide() {
 
         <div class="flow" aria-label="게임 진행 흐름">
           <div class="flow-step"><span class="flow-number">1</span><span>우리집 유형 선택</span></div>
-          <div class="flow-step"><span class="flow-number">2</span><span>일상생활을 방해하는 위험요소 찾기</span></div>
+          <div class="flow-step"><span class="flow-number">2</span><span>사진 속 점검해야 하는 부분 터치하기</span></div>
           <div class="flow-step"><span class="flow-number">3</span><span>환경수정과 보조도구 적용 확인</span></div>
           <div class="flow-step"><span class="flow-number">4</span><span>다음 공간으로 이동</span></div>
         </div>
+        <div class="guide-total">총 6개 공간 · 18개 점검 항목을 차례로 확인합니다.</div>
 
         <button class="primary-btn" onclick="goToHouseSelect()">시작하기</button>
       </div>
@@ -784,7 +785,7 @@ function renderHouseSelect() {
           <button class="category-card" onclick="selectHouseCategory('apartment')">
             <img src="assets/images/apartment-4.webp" alt="아파트" onerror="fallbackImage(this)">
             <span>아파트</span>
-            <small>복도식, 엘리베이터형, 신축, 구축</small>
+            <small>복도식, 높은층, 낮은층, 계단 이용</small>
           </button>
           <button class="category-card" onclick="selectHouseCategory('house')">
             <img src="assets/images/house-1.webp" alt="주택" onerror="fallbackImage(this)">
@@ -812,7 +813,7 @@ function renderHouseSelect() {
       ${renderBackButton()}
       <div class="house-header compact">
         <h2>${selectedHouseCategory === "apartment" ? "아파트 출입구 구조 선택" : "주택 출입구 구조 선택"}</h2>
-        <p>가장 비슷한 구조를 고르면 해당 출입구 이미지로 시작합니다.</p>
+        <p>가장 비슷한 구조를 고르면 해당 출입구 이미지로 시작합니다. 총 6개 공간, 18개 점검 항목을 확인해요.</p>
       </div>
       <div class="card-grid">
         ${cards}
@@ -880,6 +881,7 @@ function renderStage() {
         </div>
         <div class="stage-actions">
           <div class="stage-progress">공간 ${currentStageIndex + 1} / ${stages.length}</div>
+          <div class="stage-total-chip">총 6개 공간 · 18개 점검</div>
           <button class="quit-btn" onclick="quitGame()">점검 종료</button>
         </div>
       </div>
@@ -889,6 +891,7 @@ function renderStage() {
         <div>
           <strong>${stage.title} 미션</strong>
           <span>${stage.mission}</span>
+          <em>사진 속 점검해야 하는 부분을 터치하세요.</em>
         </div>
       </div>
 
@@ -907,8 +910,10 @@ function renderStage() {
           ${checklist}
           ${canMoveForward ? `
             <button class="primary-btn stage-forward-btn" onclick="goToAfterView()">개선 후 보기</button>
-          ` : ""}
-          <div class="message-box" id="messageBox">이동, 씻기, 요리, 신발 신기 같은 일상동작이 어려워지는 지점을 찾아보세요.</div>
+          ` : `
+            <button class="secondary-btn stage-skip-btn" onclick="revealCurrentAnswers()">정답 보기로 넘어가기</button>
+          `}
+          <div class="message-box" id="messageBox">사진 속에서 점검해야 하는 부분을 터치해보세요. 막히면 정답 보기로 넘어가 개선 후 장면을 확인할 수 있어요.</div>
         </aside>
       </div>
     </section>
@@ -1064,6 +1069,19 @@ function goToAfterView() {
   render();
 }
 
+function revealCurrentAnswers() {
+  const stage = stages[currentStageIndex];
+  const missingItems = stage.items.filter(item => !foundItems.includes(item.id));
+  const shouldReveal = confirm("남은 정답 위치를 확인하고 개선 후 화면으로 넘어갈까요?");
+  if (!shouldReveal) return;
+
+  foundItems = stage.items.map(item => item.id);
+  totalFoundCount += missingItems.length;
+  safePlay("clear");
+  currentScreen = "afterView";
+  render();
+}
+
 function showFeedback(symbol, x, y, type) {
   const imageArea = document.getElementById("imageArea");
   if (!imageArea) return;
@@ -1160,6 +1178,9 @@ function renderResult() {
   const completedActivities = completedStageCount > 0
     ? stages.slice(0, completedStageCount).map(stage => stage.activity).join(" · ")
     : "아직 완료한 생활동작은 없지만, 찾은 항목부터 점검 결과에 반영했어요.";
+  const totalItemCount = getTotalItemCount();
+  const safePointCount = Math.min(totalFoundCount, totalItemCount);
+  const riskPointCount = Math.max(totalItemCount - safePointCount, 0);
 
   app.innerHTML = `
     <section class="screen result-screen">
@@ -1169,35 +1190,45 @@ function renderResult() {
         <h2>${gameAbandoned ? "여기까지 점검했어요!" : "우리집 안전점검 완료!"}</h2>
         <p>${getSelectedHouseTitle()} 유형으로 ${gameAbandoned ? "지금까지 찾은 위험요소를 정리했어요." : "출입구, 현관, 거실, 주방, 침실, 욕실의 위험요소를 모두 확인했어요."}</p>
         <p>작업치료는 단순히 위험을 없애는 것이 아니라, 어르신이 실제로 하는 활동을 기준으로 사람에게 맞는 환경과 보조도구를 조정합니다.</p>
+        <div class="result-overview">
+          <strong>오늘 점검 범위</strong>
+          <span>총 6개 공간 · 18개 점검 항목</span>
+          <small>안전 확인 ${safePointCount}개 / 추가 점검 필요 ${riskPointCount}개</small>
+        </div>
 
         <div class="result-score-board">
           <div class="score-card">
             <span class="score-icon">✓</span>
-            <strong>${totalFoundCount}/${getTotalItemCount()}</strong>
-            <small>안전 포인트 발견</small>
+            <strong>${safePointCount}/${totalItemCount}</strong>
+            <small>안전 확인 항목</small>
           </div>
           <div class="score-card">
             <span class="score-icon">★</span>
             <strong>${completedStageCount}/${stages.length}</strong>
-            <small>공간 클리어</small>
+            <small>6개 공간 중 완료</small>
           </div>
           <div class="score-card">
-            <span class="score-icon">↻</span>
-            <strong>${wrongTryCount}</strong>
-            <small>재도전 횟수</small>
+            <span class="score-icon">!</span>
+            <strong>${riskPointCount}</strong>
+            <small>추가 점검 필요</small>
           </div>
+        </div>
+
+        <div class="stay-note">
+          <strong>잠깐 더 머물러 주세요</strong>
+          <span>체크리스트로 실제 집을 다시 확인하고, 설문과 인스타그램 참여로 다음 교육 자료 제작에 도움을 줄 수 있어요.</span>
         </div>
 
         <div class="result-actions" aria-label="추가 활동">
           <button class="result-link result-checklist-btn" onclick="goToHomeChecklist()">
-            <strong>우리집 체크리스트</strong><small>다음 장에서 한 번에 확인</small>
+            <strong>우리집 체크리스트</strong><small>18개 항목으로 실제 집 위험군 확인</small>
           </button>
           <a class="result-link instagram-link" href="https://www.instagram.com/ot_home_lab?igsh=YjQ1Zmdmc2VqbTNu" target="_blank" rel="noopener">
             <img src="assets/images/instagram-preview.webp" alt="" onerror="fallbackImage(this)">
-            <span><strong>인스타그램</strong><small>작업치료와 주거환경 개선 활동 보기</small></span>
+            <span><strong>인스타그램</strong><small>ot_home_lab에서 개선 사례 더 보기</small></span>
           </a>
-          <a class="result-link" href="survey.html?return=result"><strong>설문조사</strong><small>네이버폼 준비중</small></a>
-          <a class="result-link" href="resources.html?return=result"><strong>더 알아보기</strong><small>관련 정보 제공처</small></a>
+          <a class="result-link survey-link" href="https://form.naver.com/response/m9DRrMbiFxV-UK7sLzZSkQ" target="_blank" rel="noopener"><strong>네이버폼 설문하러가기</strong><small>게임 후 의견을 남겨주세요</small></a>
+          <a class="result-link resource-link" href="resources.html?return=result"><strong>더 알아보기</strong><small>보조도구와 주거환경 정보 보기</small></a>
         </div>
 
         <div class="ot-summary">
@@ -1259,9 +1290,9 @@ function renderHomeChecklist() {
           <div class="home-risk-head">
             <div>
               <h3>우리집 체크리스트</h3>
-              <p>출입구부터 화장실까지 한 번에 점검합니다.</p>
+              <p>출입구부터 화장실까지 18개 항목을 한 번에 점검합니다.</p>
             </div>
-            <div class="home-risk-score" id="homeRiskScore">0개<br><span>안전군</span></div>
+            <div class="home-risk-score" id="homeRiskScore">안전 18/18<br><span>위험 0/18 · 안전군</span></div>
           </div>
           <div class="home-risk-list">
             ${homeRiskItems}
@@ -1285,6 +1316,8 @@ function updateHomeRisk() {
   const score = document.getElementById("homeRiskScore");
   const result = document.getElementById("homeRiskResult");
   if (!score || !result) return;
+  const totalItemCount = getTotalItemCount();
+  const safeCount = Math.max(totalItemCount - checkedCount, 0);
 
   let group = "안전군";
   let className = "safe";
@@ -1302,7 +1335,7 @@ function updateHomeRisk() {
     text = "위험군: 낙상이나 일상생활 불편 위험이 높을 수 있습니다. 가족, 작업치료사, 보건소, 복지관 등과 함께 주거환경 점검을 받아보는 것이 좋습니다.";
   }
 
-  score.innerHTML = `${checkedCount}개<br><span>${group}</span>`;
+  score.innerHTML = `안전 ${safeCount}/${totalItemCount}<br><span>위험 ${checkedCount}/${totalItemCount} · ${group}</span>`;
   result.className = `home-risk-result ${className}`;
   result.textContent = text;
 }
