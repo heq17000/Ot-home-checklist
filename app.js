@@ -1193,12 +1193,6 @@ function renderResult() {
         <h2>${gameAbandoned ? "여기까지 점검했어요!" : "우리집 안전점검 완료!"}</h2>
         <p>${getSelectedHouseTitle()} 유형으로 ${gameAbandoned ? "지금까지 찾은 위험요소를 정리했어요." : "출입구, 현관, 거실, 주방, 침실, 욕실의 위험요소를 모두 확인했어요."}</p>
         <p>작업치료는 단순히 위험을 없애는 것이 아니라, 어르신이 실제로 하는 활동을 기준으로 사람에게 맞는 환경과 보조도구를 조정합니다.</p>
-        <div class="result-overview">
-          <strong>오늘 점검 범위</strong>
-          <span>총 6개 공간 · 18개 점검 항목</span>
-          <small>안전 확인 ${safePointCount}개 / 추가 점검 필요 ${riskPointCount}개</small>
-        </div>
-
         <div class="result-overview home-risk-summary-card ${homeRiskSummary.className}">
           <strong>우리집 체크리스트 결과</strong>
           <span>안전 ${homeRiskSummary.safeCount}/${homeRiskSummary.totalItemCount} · 위험 ${homeRiskSummary.checkedCount}/${homeRiskSummary.totalItemCount}</span>
@@ -1229,14 +1223,14 @@ function renderResult() {
         </div>
 
         <div class="result-actions" aria-label="추가 활동">
-          <button class="result-link result-checklist-btn" onclick="goToHomeChecklist()">
-            <strong>체크리스트 다시 보기</strong><small>체크한 항목을 수정할 수 있어요</small>
-          </button>
           <a class="result-link instagram-link" href="https://www.instagram.com/ot_home_lab?igsh=YjQ1Zmdmc2VqbTNu" target="_blank" rel="noopener">
             <img src="assets/images/instagram-preview.webp" alt="" onerror="fallbackImage(this)">
             <span><strong>인스타그램</strong><small>ot_home_lab에서 개선 사례 더 보기</small></span>
           </a>
           <a class="result-link survey-link" href="https://form.naver.com/response/m9DRrMbiFxV-UK7sLzZSkQ" target="_blank" rel="noopener"><strong>네이버폼 설문하러가기</strong><small>게임 후 의견을 남겨주세요</small></a>
+          <button class="result-link result-checklist-btn" onclick="goToHomeChecklist()">
+            <strong>체크리스트 다시 보기</strong><small>체크 수정</small>
+          </button>
           <a class="result-link resource-link" href="resources.html?return=result"><strong>더 알아보기</strong><small>보조도구와 주거환경 정보 보기</small></a>
         </div>
 
